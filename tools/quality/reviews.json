@@ -1,0 +1,166 @@
+{
+  "reviews": [
+    {
+      "file": "src/core/machine/grammar.mjs",
+      "reason": "Reviewed parseAssembly, instructionAssembly and serializeAssembly after separating the generic machine from placement. The complex parser dispatch enumerates the bounded instruction and build-configuration grammar, with 32768-character/256-instruction caps, unique numeric labels and forward-only scope-checked jumps. Serialization constructs instructions from validated structured operands and reparses the result. Operation definitions, symbols and source references enter through the explicit dialect argument; machine imports remain within machine. The unchanged original semantics and independent non-Linux dialect are both exercised. Keeping this finite parser state machine together makes its transition and rejection rules inspectable.",
+      "evidence": [
+        "tests/core/machine/core.test.mjs: passed original source hashes, arithmetic edges, malformed code, flag and CFG/trace assertions",
+        "tests/core/machine/control-grammar.test.mjs: passed both CONFIG arms, forward targets and cross-scope rejection",
+        "tests/core/machine/generic-grammar.test.mjs: passed real operand encodings, exact widths, uninitialized reads and flags",
+        "tests/core/visual/independent-adapter.test.mjs: passed independent dialect/symbol/output-register execution with no placement import; independent run of all 92 core tests passed"
+      ],
+      "rule": "function-complexity",
+      "sha256": "d08d0bad7e800fcb992dea7c03929e3ba7faecd77c06c6179fe366b6ad096db6",
+      "reviewer": "Codex independent architecture review /local_service"
+    },
+    {
+      "file": "src/core/placement/history/migration.mjs",
+      "reason": "Reviewed migrateExpressionWorkspace and its v2/v3 companion paths in their new placement/history owner. Version-specific operation and field conversions deliberately belong to the Linux adapter rather than the generic visual compiler. The migration clones saved input, enumerates supported versions, preserves IDs/layout/disabled and detached work, and only creates formerly implicit sockets for the historical shape that required them. Deliberately empty current sockets and explicitly visible empty ELSE remain untouched. The generic schema validates the resulting draft at the caller boundary; migration does not compile or silently accept a candidate. This branching expresses real historical schema transitions rather than mixed runtime responsibilities.",
+      "evidence": [
+        "tests/core/visual/generic-expressions.test.mjs: passed v4/v5/v6 migrations, unplugged sockets, assignment targets, ELSE and exact old arithmetic",
+        "tests/core/visual/visual-program.test.mjs: passed v2/v3 migration, detached drafts, real Blockly schemas and invalid connections",
+        "src/ui/editor/drafts.mjs: caller validates metadata before migration and validates the restored draft before Blockly load; all 92 core tests passed in independent review"
+      ],
+      "rule": "function-complexity",
+      "sha256": "8adb523217d17138b91dbf457a7b62e547164d1cf2652d9901ed80d92069e0bf",
+      "reviewer": "Codex independent architecture review /local_service"
+    },
+    {
+      "file": "src/core/visual/compiler.mjs",
+      "reason": "Reviewed compileWorkspace.visitChain and predicate lowering after extracting the reusable visual compiler. The switch handles one explicit finite command language; schema checking precedes lowering, runtime and build predicates follow separate bounded paths, and only one build configuration and one outer result are allowed. Both runtime arms become forward labels/jumps and generated instructions are serialized/reparsed through the injected machine. Statement-to-instruction and predicate mappings are derived from emitted positions rather than guessed trace locations. The module imports only visual helpers and takes all algorithm-specific bindings through the adapter. Keeping the command dispatcher in this module makes each visible command accountable to its emitted machine operations.",
+      "evidence": [
+        "tests/core/visual/visual-program.test.mjs: passed structured and arbitrary forward control flow, Boolean predicate switching, missing result and invalid socket checks",
+        "tests/core/visual/generic-expressions.test.mjs: passed runtime/build branch behavior and optional ELSE without hidden branch code",
+        "tests/core/visual/independent-adapter.test.mjs: passed compiler/import execution with independent machine symbols; all 92 core tests passed in independent review"
+      ],
+      "rule": "function-complexity",
+      "sha256": "c49b2e3d5901b502274ee03e0ff1b94352dc71479214a0512735c30b96f93fcd",
+      "reviewer": "Codex independent architecture review /local_service"
+    },
+    {
+      "file": "src/core/visual/expressions.mjs",
+      "reason": "Reviewed expressionCompiler.into, operand, compare and scratch allocation after their extraction into the expression owner. The nesting reflects expression kinds and the destination-preservation case, while allocation and operand encoding are separate helpers. Every explicitly named reachable scratch register is reserved before lowering; temporary exhaustion is an error. RHS expressions that read the old destination are evaluated before it is overwritten. Large exact constants are materialized instead of being truncated to an unencodable immediate. Unary inc/dec are explicit source operations, not hidden optimizations of subtraction, and comparisons preserve visible variables. Algorithm variable/input names and special direct comparison enter only through the adapter.",
+      "evidence": [
+        "tests/core/visual/generic-expressions.test.mjs: independently passed 1200 deterministic nested trees against a value oracle, old-destination reads, reserved scratch/exhaustion, full-u64 constants and mixed widths",
+        "tests/core/visual/generic-expressions.test.mjs: passed NOT/cast/INC/DEC flags and nested comparison preservation",
+        "tests/core/visual/independent-adapter.test.mjs: passed alternate variables and symbols; all 92 core tests passed in independent review"
+      ],
+      "rule": "function-complexity",
+      "sha256": "6a931de6d4259fafde9acae2dbf8ae23088a489e097a63817f3d0b80a51aa3d5",
+      "reviewer": "Codex independent architecture review /local_service"
+    },
+    {
+      "file": "src/core/visual/import.mjs",
+      "reason": "Reviewed modelToWorkspace.convert with its postdominator calculation and machine-expression conversion boundary. The finite branching translates validated forward CFG nodes into nested visible commands, placing common continuation after an if and branch-only work inside its arms. A comparison is paired with a branch only when it is adjacent and shares build scope; otherwise the true flag predicate is retained. IDs are unique and the expanded representation is capped at 1024 blocks. Unreachable primitive operations survive as detached drafts. Generic imports stay within visual; legacy operation conversion and machine CFG are injected by the adapter. The dispatcher keeps the relationship between graph decisions and visible branches explicit.",
+      "evidence": [
+        "tests/core/visual/visual-program.test.mjs: passed standalone comparisons, non-comparison flags, arbitrary forward branches, detached drafts and import round trips",
+        "tests/core/visual/generic-expressions.test.mjs: passed mixed-width machine values/flags and pinned Linux import with high-u64 inputs",
+        "tests/core/visual/independent-adapter.test.mjs: passed generic import with no placement defaults; all 92 core tests passed in independent review"
+      ],
+      "rule": "function-complexity",
+      "sha256": "2b450394884adff4508bd4c3fbfe8a7d46a3478ffbcb036815c4903d9a62091f",
+      "reviewer": "Codex independent architecture review /local_service"
+    },
+    {
+      "file": "src/core/visual/schema.mjs",
+      "reason": "Reviewed inspectWorkspace and connection validation after separating the visual schema from the compiler and historical migration. Its branches enumerate allowed field/input shapes and reject unknown types/fields, repeated objects, cycles, duplicate IDs, shadow connections, hidden ELSE bodies and excessive block counts. Traversal is iterative and capped at 1024 blocks. Draft validation intentionally allows empty sockets, while compilation requires the values needed by execution. The only historical shapes come from adapter.history; generic operation definitions and variable/input keys do not import placement. A single schema dispatcher keeps structural acceptance consistent between restoration, import and compilation instead of duplicating partially overlapping validators.",
+      "evidence": [
+        "tests/core/visual/visual-program.test.mjs: passed real Blockly serialization, invalid values, socket types, cycles and unique entry/result constraints",
+        "tests/core/visual/generic-expressions.test.mjs: passed incomplete v6 sockets and explicitly empty ELSE preservation",
+        "tests/core/visual/independent-adapter.test.mjs: passed generic schema with independent adapter; all 92 core tests passed in independent review"
+      ],
+      "rule": "function-complexity",
+      "sha256": "85b4cc6aa3e29cf512a9198a6eacced96d83450cdb99ea4b44b3e6535eb38377",
+      "reviewer": "Codex independent architecture review /local_service"
+    },
+    {
+      "file": "src/service/http/server.mjs",
+      "reason": "Reviewed staticFile and the createArenaServer request callback after moving HTTP authority to service/http. These branches are explicit finite route/public-file allowlists. Local Host/Origin and cross-site checks precede routing; mutations require bounded JSON bodies. Static paths are decoded, traversal is rejected before normalization, agent maps are denied case-insensitively including Windows trailing-dot/space aliases, and canonical real paths must remain within the selected public root. SSE subscription/heartbeat cleanup is paired with connection close. HTTP delegates candidate persistence/evaluation to store and never acquires child_process; native execution stays behind store/native with fixed attribution. Keeping the small route dispatcher together makes authority checks visibly common to every endpoint.",
+      "evidence": [
+        "tests/service/http.test.mjs: 7 real loopback tests independently passed, including AGENTS.md case/trailing-dot/space denial, traversal, origin, atomic edits, restart invalidation and SSE",
+        "tests/service/mcp.test.mjs: 2 tests independently passed, including real SDK handshake/mutation and no body forwarding on 307/308 redirect",
+        "tools/quality/policy/components.mjs: current service/http imports are limited to own/store/core plus permitted Node capabilities; loopback suite ran with approved sandbox override after EACCES"
+      ],
+      "rule": "function-complexity",
+      "sha256": "0a7a6a1da2343e82a57dc945bb2357612c142f7a54c99c042acbd5d18f665a09",
+      "reviewer": "Codex independent architecture review /local_service"
+    },
+    {
+      "file": "tools/quality/policy/imports.mjs",
+      "rule": "function-complexity",
+      "sha256": "333d03e947c069394b8c194db4de3eb36fa87d2259996163361c7cf947f034aa",
+      "reason": "Reviewed checkImport, localTarget and inspectGraph against the component matrix and service package policy. The finite branches separate local resolution, missing dependencies, layer/component direction, Node builtins, service SDK permission and opaque core packages. Literal imports, reexports and require enter one graph; unresolved and nonliteral dependencies fail instead of disappearing. Generic-to-placement reachability is checked transitively and cycles are rejected. The current complexity reflects these explicit dependency categories; keeping one ordered import decision avoids inconsistent exceptions. This is bounded architecture analysis, not a security proof for arbitrary JavaScript indirection.",
+      "evidence": [
+        "Independent 29 policy tests passed: reverse/lateral components, unknown owners, transitive generic leaks, reexports, dynamic imports, cycles and child_process/module/vm ownership.",
+        "Independent imports/components/index review on 2026-10-22."
+      ],
+      "reviewer": "Codex independent architecture review /boot_model"
+    },
+    {
+      "file": "tools/quality/policy/scopes.mjs",
+      "rule": "function-complexity",
+      "sha256": "deee7307be95989e06b620bb27cb1d93d5c9f7d1c4edfa011c966bc87f202a09",
+      "reason": "Reviewed createScopes.bind and createScopes.visit. Branches enumerate supported binding patterns and lexical/function scopes; var declarations bind to the enclosing function while parameters, imports, catch bindings and destructuring are registered explicitly. Reference classification distinguishes property keys and declarations from ambient capabilities. Keeping the traversal with its binding logic makes the scope model inspectable. Injected Blockly parameters remain permitted while ambient host references are rejected. This is a conservative bounded scope model for policy checks, not full ECMAScript abstract execution.",
+      "evidence": [
+        "Independent 29 policy tests passed, including scoped host globals, injected Blockly, aliases and recursive computed keys.",
+        "Independent scopes and values/capabilities consumer review on 2026-10-22."
+      ],
+      "reviewer": "Codex independent architecture review /boot_model"
+    },
+    {
+      "file": "tools/quality/policy/test-policy.mjs",
+      "rule": "function-complexity",
+      "sha256": "a85088308d3b21ddf0dd568827efdb18648f09c7a3797b2b5d06270c18e56752",
+      "reason": "Reviewed checkDisabledTest and testRoot. The dispatch covers explicit test modifiers, literal and conditional exclusion options, assignments after object construction, aliases and replacement of the native-gate environment. Known exclusions produce ERROR; an unresolved condition requires review and cannot silently pass. The full runner forces REQUIRE_NATIVE_ENGINE=1, matching the static condition model. Keeping these related exclusion paths together makes their common fail-closed handling visible.",
+      "evidence": [
+        "Independent 29 policy tests passed including test exclusion paths.",
+        "Confirmed full runner child environment forces REQUIRE_NATIVE_ENGINE=1."
+      ],
+      "reviewer": "Codex independent architecture review /boot_model"
+    },
+    {
+      "file": "tools/quality/policy/values.mjs",
+      "rule": "function-complexity",
+      "sha256": "fe8538b6195992535fc88687b0101b59e4c8b46b5c947b061fe4132e2756d04c",
+      "reason": "Reviewed staticValue, propertyName and globalPath. Their finite cases resolve literals, immutable aliases, selected unary/logical/conditional/binary forms and computed paths without executing source. Recursive references terminate through a seen set, unsupported forms return UNKNOWN, and incompatible BigInt addition does not crash analysis. The only environment substitution is the native gate flag whose mutation is checked separately. One explicit evaluator keeps supported forms and conservative fallback adjacent; this is deliberately incomplete static evaluation.",
+      "evidence": [
+        "Independent 29 policy tests passed including recursive keys, BigInt, global aliases and conditional evaluation.",
+        "Independent scope and test-policy consumer review on 2026-10-22."
+      ],
+      "reviewer": "Codex independent architecture review /boot_model"
+    },
+    {
+      "file": "tools/quality/structure.mjs",
+      "rule": "function-complexity",
+      "sha256": "f8b6dc4c46233f232b6a64d9693ad68ddb3e3c28c6a7a7dd86dff2d48e86be04",
+      "reason": "Reviewed checkMapRows with visibleLines, expectedTargets, directoryIndex and vendor inventory validation. Its branches enforce the ownership table format, safe direct links, nonempty responsibilities, duplicate/stale rows and complete direct-item coverage. Commented, fenced and indented content cannot satisfy ownership; a shorter fence does not end a longer one. Vendor files are exempt only when manifest-owned, while their parent boundary remains documented. Keeping the row validator cohesive supports precise diagnostics; complexity here reflects independent validation obligations, not hidden application behavior.",
+      "evidence": [
+        "Independent 17 structure tests and 9 inventory/hooks tests passed, including real Git and junction fixtures.",
+        "Independent structure/vendor/inventory final review on 2026-10-22."
+      ],
+      "reviewer": "Codex independent architecture review /boot_model"
+    },
+    {
+      "file": "src/ui/contract/render.mjs",
+      "rule": "function-complexity",
+      "sha256": "86cde4c7f43bb0586082c057331cb2be8ce62cfe6c4bec295d9aa55b33e909c6",
+      "reason": "Reviewed renderContract with ContractView state and input lifecycle. It projects the core contract result onto existing DOM nodes; it does not evaluate the algorithm itself. The branches distinguish pending, incomplete, failed, caution and passed states, suppress stale success, preserve dirty field values and expose an actual diagnostic path. User-controlled values enter textContent or attributes, not HTML. Keeping this one projection of the bounded contract result prevents competing render paths and preserves field identity. Its cyclomatic count largely comes from explicit presentation states rather than separate business responsibilities.",
+      "evidence": [
+        "Independent tests/ui/contract-view.test.mjs: all six tests passed, including dirty/focused input, rejected edits, pending draft and failed-path callbacks.",
+        "Independent review of render, controller and template boundary on 2026-10-22."
+      ],
+      "reviewer": "Codex independent architecture review /root"
+    },
+    {
+      "file": "src/ui/scene/geometry.mjs",
+      "rule": "function-complexity",
+      "sha256": "853bfbdc4a8704b62156fe362f04bdb6aa884b1d50752ad98f36cef7febfcfe5",
+      "reason": "Reviewed buildGraphGeometry with ArenaScene.setGraph and clear. This module owns one graph-to-geometry projection; navigation and frame animation remain in the scene controller. Explicit branches select the two graph layouts, available/locked node styles and horizontal/vertical/diagonal connections; invalid edge endpoints are skipped. All created geometry and material resources are attached to the scene group so replacement traverses and disposes them. DOM labels call the injected navigation callback. The cohesive geometry factory makes resource ownership inspectable without spreading it across per-node custom components.",
+      "evidence": [
+        "Independent tests/ui/scene.test.mjs passed with real Three.js geometry and JSDOM: both modes, finite coordinates, missing endpoint, click/hover/highlight and disposal of every resource on replacement.",
+        "Desktop and narrow browser checks after refactor showed the existing saved candidate and no console errors; GPU memory lifetime is not claimed by the JSDOM test."
+      ],
+      "reviewer": "Codex independent architecture review /root"
+    }
+  ]
+}

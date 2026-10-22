@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101516" />
+    <meta
+      name="description"
+      content="LinuxArena — исследование и улучшение ядра Linux вместе со своим ИИ-агентом."
+    />
+    <title>LinuxArena — ядро в разрезе</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23101516'/%3E%3Cpath d='M16 19h11v25h22v9H16z' fill='%23beed88'/%3E%3Cpath d='m37 11 16 9-16 9-16-9z' fill='%23beed88'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/src/ui/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/vendor/three/three.module.js",
+          "three/webgpu": "/vendor/three/three.webgpu.js",
+          "three/addons/": "/vendor/three/addons/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <button class="brand" id="home" aria-label="LinuxArena — к ядру">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="m16 2 14 8-14 8L2 10z" />
+            <path d="m2 16 14 8 14-8M2 22l14 8 14-8" /></svg
+          ><span>linux<span class="brand-light">arena</span></span>
+        </button>
+        <div class="release">6.18.58 <span>LTS</span></div>
+        <div class="header-spacer"></div>
+        <span id="connection" class="connection"><i></i> Локально</span>
+        <button class="agent-button" id="agent-button">
+          <span class="button-icon" data-icon="plug"></span><span>Свой агент</span
+          ><span class="mini-tag">MCP</span>
+        </button>
+      </header>
+
+      <main>
+        <div class="workspace-heading">
+          <div>
+            <nav id="breadcrumbs" class="breadcrumbs" aria-label="Слои"></nav>
+            <div class="title-row">
+              <h1 id="layer-title">Ядро Linux</h1>
+              <span class="layer-index" id="layer-index">01 / 03</span>
+            </div>
+            <div class="scope-label" id="scope-label">x86-64 · карта подсистем</div>
+          </div>
+          <div class="heading-actions">
+            <button
+              class="icon-button"
+              id="contract-button"
+              title="Контракт блока"
+              aria-label="Контракт блока"
+              data-icon="contract"
+            ></button>
+            <button
+              class="icon-button"
+              id="code-button"
+              title="Код блока"
+              aria-label="Код блока"
+              data-icon="code"
+            ></button>
+            <button class="primary-button" id="run-button">
+              <span data-icon="play"></span><span id="run-label">Исследовать</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="arena-workbench" class="arena-workbench">
+          <section id="live-contract" hidden aria-label="Исполнение контракта"></section>
+          <section class="workspace" id="workspace" aria-label="Визуальная архитектура ядра">
+            <div class="scene-area" id="scene-area">
+              <div id="scene-host" class="scene-host"></div>
+              <div id="node-labels" class="node-labels" aria-label="Блоки текущего слоя"></div>
+              <div id="flow-host" class="flow-host" hidden></div>
+              <div class="stage-topline">
+                <span class="eyebrow" id="map-kind">АРХИТЕКТУРА</span
+                ><span class="tiny-pill"><i></i><span id="map-status">1 маршрут открыт</span></span>
+              </div>
+              <div id="edit-tools" class="edit-tools" hidden>
+                <div class="algorithm-tabs" role="group" aria-label="Сравнение алгоритмов">
+                  <button id="candidate-view" aria-pressed="true">Моё решение</button
+                  ><button id="reference-view" aria-pressed="false">Как в Linux</button>
+                </div>
+                <button id="undo-blocks" title="Отменить" aria-label="Отменить правку">↶</button
+                ><button id="redo-blocks" title="Повторить" aria-label="Повторить правку">↷</button
+                ><button id="delete-block" title="Удалить выбранный блок" aria-label="Удалить выбранный блок">
+                  ⌫
+                </button>
+                <button id="trace-button" class="trace-button">▷ Путь</button
+                ><span id="draft-status" role="status"></span
+                ><button id="reload-blocks" hidden>Загрузить сохранённое</button>
+              </div>
+              <div class="scene-toolbar">
+                <div class="view-controls">
+                  <button
+                    class="icon-button"
+                    id="zoom-out"
+                    data-icon="minus"
+                    title="Отдалить"
+                    aria-label="Отдалить"
+                  ></button
+                  ><button
+                    class="icon-button"
+                    id="fit-view"
+                    data-icon="fit"
+                    title="Вписать схему"
+                    aria-label="Вписать схему"
+                  ></button
+                  ><button
+                    class="icon-button"
+                    id="zoom-in"
+                    data-icon="plus"
+                    title="Приблизить"
+                    aria-label="Приблизить"
+                  ></button>
+                </div>
+                <div class="scene-hint" id="scene-hint"><span class="hint-key">↵</span> Войти в блок</div>
+                <button class="text-button back-button" id="back-button">
+                  <span data-icon="back"></span> Выше
+                </button>
+              </div>
+              <div id="trace-banner" class="trace-banner" hidden>
+                <span class="trace-dot"></span><span id="trace-label"></span><code id="trace-value"></code>
+              </div>
+              <div id="scene-fallback" class="scene-fallback" hidden>
+                3D недоступно. Навигация по блокам сохранена.
+              </div>
+            </div>
+
+            <aside class="inspector" id="inspector" hidden>
+              <div class="inspector-header">
+                <div class="inspector-tabs">
+                  <button id="contract-tab" class="active">Контракт</button
+                  ><button id="source-tab">Код</button>
+                </div>
+                <button
+                  class="icon-button small"
+                  id="close-inspector"
+                  data-icon="close"
+                  aria-label="Закрыть панель"
+                ></button>
+              </div>
+              <div id="contract-view">
+                <div class="panel-caption">
+                  <span class="eyebrow">ВХОД</span><span class="mono">boot_params</span>
+                </div>
+                <form id="inputs-form">
+                  <label class="input-field"
+                    ><span>Адрес образа <code>load</code></span
+                    ><input
+                      name="loadAddress"
+                      id="load-address"
+                      value="0x1380000"
+                      spellcheck="false"
+                      autocomplete="off"
+                      aria-label="Адрес образа"
+                  /></label>
+                  <label class="input-field"
+                    ><span>Выравнивание <code>align</code></span
+                    ><select name="alignment" id="alignment" aria-label="Выравнивание">
+                      <option value="0x200000">2 MiB</option>
+                      <option value="0x1000000">16 MiB</option>
+                      <option value="0x2000000">32 MiB</option>
+                    </select></label
+                  >
+                  <label class="input-field"
+                    ><span>Нижняя граница <code>min</code></span
+                    ><input
+                      name="minimumAddress"
+                      id="minimum-address"
+                      value="0x1000000"
+                      spellcheck="false"
+                      autocomplete="off"
+                      aria-label="Нижняя граница"
+                  /></label>
+                  <label class="toggle-field"
+                    ><span>Перемещение ядра</span><input type="checkbox" id="relocatable" checked /><span
+                      class="toggle-track"
+                      aria-hidden="true"
+                    ></span
+                  ></label>
+                  <button class="secondary-button apply-inputs" type="submit">
+                    Применить входы <span>↵</span>
+                  </button>
+                </form>
+                <div class="output-field">
+                  <div class="eyebrow">ВЫХОД <code>%rbp</code></div>
+                  <div id="output-value" class="output-value">—</div>
+                  <div id="output-description" class="muted">Адрес распаковки</div>
+                </div>
+                <div class="contract-facts">
+                  <span>u64 · без выделения памяти</span
+                  ><span id="contract-effects">Изменяет RAX, RBP и флаги</span
+                  ><span id="contract-extra-effects" hidden></span>
+                </div>
+                <div id="contract-warning" class="contract-warning" hidden></div>
+                <div class="source-anchor">
+                  <span data-icon="source"></span
+                  ><a
+                    href="https://github.com/gregkh/linux/blob/v6.18.58/arch/x86/boot/compressed/head_64.S#L315-L326"
+                    target="_blank"
+                    rel="noreferrer"
+                    >head_64.S <span>315–326 ↗</span></a
+                  >
+                </div>
+              </div>
+              <div id="source-view" hidden>
+                <div class="editor-top">
+                  <span class="eyebrow">ASM · КАНДИДАТ</span
+                  ><button class="text-button" id="reset-program">Сбросить</button>
+                </div>
+                <textarea id="source-editor" spellcheck="false" aria-label="Ассемблер блока"></textarea>
+                <div class="editor-actions">
+                  <span id="edit-status" class="muted">Синхронизировано</span
+                  ><button class="primary-button small-primary" id="save-program">Применить</button>
+                </div>
+                <p class="editor-note">
+                  Код генерируется из соединённых блоков. Изменения кода возвращаются в редактор.
+                </p>
+              </div>
+            </aside>
+          </section>
+        </div>
+        <section class="metrics" id="metrics" aria-label="Показатели процессов"></section>
+
+        <footer class="contributors">
+          <div class="contributors-left">
+            <span class="eyebrow">КОНТРИБЬЮТОРЫ</span>
+            <div class="avatar-stack" aria-label="Авторы исходника">
+              <span title="Linus Torvalds">LT</span><span title="Hans Lermen">HL</span
+              ><span title="Werner Almesberger">WA</span>
+            </div>
+            <a
+              href="https://github.com/gregkh/linux/blob/v6.18.58/arch/x86/boot/compressed/head_64.S"
+              target="_blank"
+              rel="noreferrer"
+              >Linux contributors <span>↗</span></a
+            >
+          </div>
+          <div class="contribution-status">
+            <span class="hollow-dot"></span><span>Рекорды ещё не присвоены</span
+            ><span class="footer-version">PROTOTYPE 01</span>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <dialog id="agent-dialog">
+      <div class="dialog-header">
+        <div>
+          <span class="eyebrow">MCP · STDIO</span>
+          <h2>Твой агент. Твоя попытка.</h2>
+        </div>
+        <button class="icon-button" id="close-dialog" data-icon="close" aria-label="Закрыть"></button>
+      </div>
+      <p>Запусти MCP из папки проекта. Изменения агента сразу появятся на арене.</p>
+      <div class="command-box">
+        <code>node src/service/mcp/server.mjs</code
+        ><button
+          class="icon-button"
+          id="copy-command"
+          data-icon="copy"
+          aria-label="Скопировать команду"
+        ></button>
+      </div>
+      <div class="tool-chips"><span>Считать блок</span><span>Изменить код</span><span>Проверить</span></div>
+      <div class="dialog-foot">
+        <span class="status-dot"></span> Локальный сервер · <span id="server-address">127.0.0.1:4173</span>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <script src="/vendor/blockly/blockly_compressed.js"></script>
+    <script src="/vendor/blockly/msg/ru.js"></script>
+    <script type="module" src="/src/ui/shell/app.mjs"></script>
+  </body>
+</html>

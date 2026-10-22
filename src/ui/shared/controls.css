@@ -1,0 +1,95 @@
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  background: none;
+  color: #a2b0a9;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.icon-button:hover {
+  background: #2a3630;
+  color: var(--text);
+}
+.icon-button.active {
+  color: var(--accent);
+  background: #26362a;
+}
+.icon-button.small {
+  width: 27px;
+  height: 27px;
+}
+.primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 7px;
+  padding: 11px 18px;
+  background: var(--accent);
+  color: #22321a;
+  font-size: 12px;
+  font-weight: 750;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.primary-button:hover {
+  background: #d5ffa2;
+  transform: translateY(-1px);
+}
+.primary-button svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  stroke-width: 1.1;
+}
+.primary-button:disabled {
+  opacity: 0.7;
+  transform: none;
+}
+.small-primary {
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.text-button {
+  background: none;
+  color: #97a99c;
+  font-size: 11px;
+  padding: 3px;
+}
+.text-button:hover {
+  color: var(--accent);
+}
+
+.secondary-button {
+  border: 1px solid #3d4f3c;
+  border-radius: 5px;
+  padding: 7px 10px;
+  color: #bacfb1;
+  font-size: 11px;
+  background: #263324;
+}
+.secondary-button:hover {
+  background: #35482c;
+}
+
+.busy-icon {
+  animation: rotate 1s linear infinite;
+}
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .primary-button {
+    padding: 10px 12px;
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,71 @@
+.contributors {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 89px;
+}
+.contributors-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.contributors .eyebrow {
+  color: #5d7566;
+  font-size: 8px;
+  letter-spacing: 1.1px;
+}
+.avatar-stack {
+  display: flex;
+  padding-left: 4px;
+}
+.avatar-stack span {
+  margin-left: -5px;
+  width: 27px;
+  height: 27px;
+  border: 3px solid var(--bg);
+  border-radius: 50%;
+  background: #425441;
+  color: #baceac;
+  display: grid;
+  place-items: center;
+  font: 8px var(--mono);
+}
+.avatar-stack span:nth-child(2) {
+  background: #4c4e3c;
+  color: #d1caa7;
+}
+.avatar-stack span:nth-child(3) {
+  background: #354f4d;
+  color: #a8c8bf;
+}
+.contributors-left a {
+  font-size: 10px;
+  color: #91a18f;
+}
+.contributors-left a:hover {
+  color: var(--accent);
+}
+.contributors-left a span {
+  color: #58735e;
+  margin-left: 5px;
+}
+.contribution-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  color: #66806b;
+}
+.hollow-dot {
+  border: 1px solid #5b775b;
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+}
+.footer-version {
+  font: 8px var(--mono);
+  letter-spacing: 1px;
+  margin-left: 20px;
+  color: #425c48;
+}

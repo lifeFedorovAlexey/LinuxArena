@@ -1,0 +1,75 @@
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 20px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #151c1b;
+  overflow: hidden;
+}
+.metric {
+  padding: 17px 22px;
+  min-width: 0;
+  position: relative;
+}
+.metric + .metric {
+  border-left: 1px solid var(--line);
+}
+.metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+  color: #97a69a;
+  margin-bottom: 9px;
+}
+.metric-top svg {
+  width: 13px;
+  height: 13px;
+  color: #667d69;
+}
+.metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.metric-value {
+  font: 23px var(--mono);
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  color: #d7e3d2;
+}
+.metric-value.highlight {
+  color: var(--accent);
+}
+.metric-unit {
+  font: 10px var(--mono);
+  color: #7d947d;
+}
+.metric-foot {
+  font-size: 9px;
+  color: #667b6c;
+  margin-top: 7px;
+  min-height: 13px;
+}
+.metric-action {
+  background: none;
+  padding: 0;
+  color: #a9c68f;
+  font-size: 9px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.metric-action:hover {
+  color: var(--accent);
+}
+.metric-action svg {
+  width: 10px;
+  height: 10px;
+}
+.metric-foot.warning {
+  color: #cfa97f;
+}

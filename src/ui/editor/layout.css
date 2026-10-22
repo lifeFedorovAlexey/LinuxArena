@@ -1,0 +1,37 @@
+.workspace.logic-view {
+  height: min(82vh, 860px);
+  min-height: 680px;
+}
+.logic-view .scene-area {
+  background-color: #141d1b;
+  background-image: radial-gradient(#53695b44 0.75px, transparent 0.75px);
+  background-size: 18px 18px;
+}
+.flow-host {
+  position: absolute;
+  inset: 77px 0 48px;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+.logic-view .stage-topline {
+  z-index: 1;
+}
+@media (max-width: 760px) {
+  .workspace.logic-view {
+    min-height: 650px;
+    height: 82vh;
+  }
+  .flow-host {
+    inset: 77px 0 48px;
+  }
+}
+.logic-view .scene-toolbar {
+  background: #152018;
+  bottom: 9px;
+  border-radius: 6px;
+  padding: 4px;
+}
+.logic-view .trace-banner {
+  bottom: 56px;
+  pointer-events: none;
+}

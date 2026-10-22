@@ -1,0 +1,121 @@
+.cv-cases {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  border-top: 1px solid #2f3d2d;
+  padding-top: 8px;
+  align-items: start;
+}
+.cv-case {
+  display: block;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #33432f;
+  border-radius: 6px;
+  text-align: left;
+  background: #111b14;
+  color: #afc3a0;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.cv-case:hover:not(:disabled) {
+  border-color: #718b55;
+  background: #24321e;
+}
+.cv-case.active {
+  border-color: #789b55;
+  background: #24341e;
+}
+.cv-case:focus-visible,
+.cv-problem:focus-visible {
+  outline: 2px solid var(--cv-accent);
+  outline-offset: 3px;
+}
+.cv-case-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+.cv-case-mark {
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  flex: none;
+  margin-top: -1px;
+  border: 1px solid #53634a;
+  border-radius: 4px;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 650;
+  color: #829477;
+}
+.cv-case[data-status='passed'] .cv-case-mark {
+  color: var(--cv-accent);
+  border-color: #608342;
+  background: #34452a55;
+}
+.cv-case[data-status='failed'] {
+  border-color: #795244;
+  background: #2a211b;
+}
+.cv-case[data-status='failed'] .cv-case-mark {
+  color: var(--cv-red);
+  border-color: #9a6656;
+  background: #683b2f44;
+}
+.cv-case-path {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 5px 0 0 22px;
+  font: 10px var(--mono, Consolas, monospace);
+  color: #7f9570;
+  white-space: nowrap;
+}
+.cv-case-path strong {
+  font: inherit;
+  color: #c2d4b2;
+}
+.cv-mini-arrow {
+  color: #536b42;
+}
+.cv-case-actual {
+  display: block;
+  font-size: 9px;
+  line-height: 1.4;
+  color: var(--cv-red);
+  margin: 6px 0 0 22px;
+  overflow-wrap: anywhere;
+}
+.cv-case-reason {
+  display: block;
+  font-size: 10px;
+  line-height: 1.45;
+  color: #d7b8a8;
+  margin: 5px 0 0 22px;
+}
+.cv-problem {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 9px;
+  border: 1px solid #795244;
+  border-radius: 5px;
+  background: #34271f;
+  color: #e1b79e;
+  font-size: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+.cv-problem:hover {
+  background: #483027;
+}
+.contract-view[data-status='stale'] .cv-case.active {
+  border-color: #69735d;
+  background: #2b3026;
+}

@@ -1,0 +1,38 @@
+{
+  "name": "linuxarena",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A visual arena for real Linux kernel algorithms",
+  "engines": {
+    "node": "^22.22.2 || >=24.15.0"
+  },
+  "scripts": {
+    "dev": "node src/service/http/server.mjs",
+    "start": "node src/service/http/server.mjs",
+    "build": "node tools/build.mjs",
+    "test": "node tools/test.mjs",
+    "engine:test": "node engine/build.mjs test",
+    "engine:build": "node engine/build.mjs build",
+    "mcp": "node src/service/mcp/server.mjs",
+    "quality": "node tools/quality/run.mjs",
+    "quality:fast": "node tools/quality/run.mjs --fast",
+    "lint": "eslint . --max-warnings 0",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "hooks:install": "node tools/git/install.mjs",
+    "prepare": "node tools/git/install.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "blockly": "13.4.0",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "acorn": "8.19.0",
+    "eslint": "10.13.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.10"
+  }
+}

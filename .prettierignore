@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.arena/
+.quality/
+artifacts/
+engine/target/
+# Pinned upstream bytes must remain unchanged; verified by source-hash tests.
+reference/
+package-lock.json

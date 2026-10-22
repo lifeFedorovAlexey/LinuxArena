@@ -1,0 +1,140 @@
+.node-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.node-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: left;
+  background: transparent;
+  pointer-events: auto;
+  padding: 9px 8px;
+  min-width: 125px;
+  max-width: 180px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition:
+    opacity 0.2s,
+    color 0.2s;
+  white-space: nowrap;
+}
+.node-label .node-icon {
+  color: #9cb3a2;
+  margin-bottom: 5px;
+  display: grid;
+  place-items: center;
+}
+.node-label .node-icon svg {
+  width: 21px;
+  height: 21px;
+  stroke-width: 1.5;
+}
+.node-label .node-name {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+  color: #bdcbc0;
+  line-height: 1.35;
+}
+.node-label .node-subtitle {
+  font: 9px var(--mono);
+  color: #758b7c;
+  letter-spacing: 0.1px;
+}
+.node-label.available .node-name {
+  color: #e0f3d0;
+}
+.node-label.available .node-icon {
+  color: var(--accent);
+}
+.node-label.available .node-subtitle {
+  color: #a4c78b;
+}
+.node-label.locked {
+  cursor: default;
+  opacity: 0.65;
+}
+.node-label:hover.available .node-name {
+  color: #fff;
+}
+.node-label:focus-visible {
+  outline: 1px solid var(--accent);
+  background: #26352c99;
+}
+.node-label .node-badge {
+  position: absolute;
+  right: 9px;
+  top: 7px;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  background: var(--accent);
+  color: #243b1a;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 15px #b6f28b32;
+}
+.node-badge svg {
+  width: 9px;
+  height: 9px;
+  stroke-width: 2;
+}
+.node-label.operation {
+  min-width: 112px;
+}
+.node-label.operation .node-name {
+  font: 12px var(--mono);
+  color: #c2d5c4;
+}
+.node-label.operation .node-subtitle {
+  font: 9px var(--font);
+  color: #7f9585;
+}
+.node-label.operation.trace-active .node-name {
+  color: var(--accent);
+}
+.node-label.operation.trace-active {
+  background: #31453566;
+  box-shadow: 0 0 24px #b7e98b0d;
+}
+.trace-banner {
+  position: absolute;
+  bottom: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 11px 14px;
+  border-radius: 7px;
+  background: #131d18f0;
+  border: 1px solid #536c42;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 5px 25px #0003;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.trace-dot {
+  background: var(--accent);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.trace-banner code {
+  color: var(--accent);
+  margin-left: 14px;
+  font-size: 11px;
+}
+.scene-fallback {
+  position: absolute;
+  top: 50px;
+  left: 24px;
+  color: #aab7a9;
+  font-size: 11px;
+}
+.transitioning .node-label {
+  pointer-events: none;
+}

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Excerpts from Linux v6.18.58 arch/x86/Kconfig, lines 2024-2026 and 2123-2125.
+config PHYSICAL_START
+	hex "Physical address where the kernel is loaded" if (EXPERT || CRASH_DUMP)
+	default "0x1000000"
+
+config PHYSICAL_ALIGN
+	hex "Alignment value to which kernel should be aligned"
+	default "0x200000"

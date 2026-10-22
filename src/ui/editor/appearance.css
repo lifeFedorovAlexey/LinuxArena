@@ -1,0 +1,86 @@
+.blocklySvg {
+  width: 100%;
+  height: 100%;
+  stroke: none !important;
+  fill: none;
+  border: 0 !important;
+  font-family: var(--font);
+}
+.flow-host .blocklyText {
+  font-family: var(--font) !important;
+  fill: #e5efdf !important;
+  stroke: none;
+}
+.flow-host .arena_literal .blocklyText {
+  fill: #24331f !important;
+}
+.blocklyToolbox {
+  font-family: var(--font) !important;
+  font-size: 11px !important;
+  border-right: 1px solid #314136;
+}
+.blocklyToolboxCategory {
+  padding: 8px 7px !important;
+  min-height: 32px;
+}
+.blocklyTreeRow {
+  height: 30px !important;
+  margin-bottom: 5px !important;
+}
+.blocklyTreeLabel {
+  font: 11px var(--font) !important;
+}
+.blocklyTreeIcon {
+  width: 9px !important;
+}
+.blocklyToolboxCategoryLabel {
+  font-size: 11px !important;
+}
+.blocklyMainBackground {
+  stroke: none !important;
+}
+.blocklyWidgetDiv,
+.blocklyDropDownDiv,
+.blocklyTooltipDiv {
+  z-index: 80 !important;
+}
+.blocklyDropDownDiv {
+  border-color: #71875f !important;
+}
+.blocklyMenuItem {
+  font-family: var(--font) !important;
+}
+.blocklySelected > .blocklyPath {
+  stroke: #d6ffad !important;
+  stroke-width: 3px !important;
+}
+.arena-selected > .blocklyPath {
+  stroke: #d6ffad !important;
+  stroke-width: 3px !important;
+}
+.flow-host .blocklyDropdownRect {
+  stroke: none !important;
+  fill: transparent !important;
+}
+.blocklyDropDownDiv.arena-theme .blocklyDropDownContent {
+  height: auto !important;
+  max-height: none;
+}
+.blocklyDropDownDiv.arena-theme .blocklyDropdownMenu {
+  box-sizing: border-box;
+  max-height: min(480px, calc(100dvh - 48px));
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.block-surface {
+  position: absolute;
+  inset: 0;
+}
+.arena-problem > .blocklyPath {
+  stroke: #e6a776 !important;
+  stroke-width: 3px !important;
+}
+.arena-executed > .blocklyPath {
+  stroke: #c2f18a;
+  stroke-width: 2px;
+}

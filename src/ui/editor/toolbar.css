@@ -1,0 +1,84 @@
+.edit-tools {
+  position: absolute;
+  top: 39px;
+  left: 17px;
+  right: 17px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 10px;
+  min-height: 30px;
+}
+.edit-tools button {
+  border: 1px solid #3c5140;
+  border-radius: 5px;
+  background: #253529;
+  padding: 3px 8px;
+  color: #c3d9b6;
+  font-size: 16px;
+}
+.edit-tools #reload-blocks {
+  font-size: 9px;
+  margin-left: auto;
+}
+.edit-tools #draft-status {
+  margin-left: 5px;
+  color: #8ba47c;
+  font-size: 9px;
+}
+.edit-tools #draft-status.invalid {
+  color: #e0b18b;
+}
+.edit-tools .algorithm-tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid #394c3d;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-right: 5px;
+  flex-shrink: 0;
+}
+.edit-tools .algorithm-tabs button {
+  border: 0;
+  border-radius: 0;
+  background: #18221c;
+  color: #8fa08c;
+  font-size: 10px;
+  padding: 7px 9px;
+}
+.edit-tools .algorithm-tabs button[aria-pressed='true'] {
+  background: #33462a;
+  color: #d5f1be;
+}
+.edit-tools .trace-button {
+  font-size: 10px;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+#draft-status {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 210px;
+}
+#draft-status.invalid {
+  white-space: normal;
+}
+@media (max-width: 560px) {
+  .edit-tools {
+    gap: 4px;
+    flex-wrap: wrap;
+    align-content: start;
+  }
+  .edit-tools .algorithm-tabs button {
+    padding: 6px;
+  }
+  .edit-tools #draft-status {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+  .flow-host {
+    top: 104px;
+  }
+}
