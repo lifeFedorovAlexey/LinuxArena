@@ -116,6 +116,68 @@ test('arbitrary-register CMP preserves operands and controls the real forward br
   }
 });
 
+test('ANDN uses AT&T source order, zero-extension and flags with every destination alias', () => {
+  for (const width of [32, 64]) {
+    const alias = (name) => (width === 32 ? `${name}d` : name);
+    for (const [first, second, expected64, expected32] of [
+      ['0xffffffffffffffff', '0xffffffff00000000', '0xffffffff', '0xffffffff'],
+      ['0x80000000000000f0', '0x30', '0x80000000000000c0', '0xc0'],
+      ['0x0', '0xffffffffffffffff', '0x0', '0x0'],
+      ['0xffffffffffffffff', '0xffffffffffffffff', '0x0', '0x0'],
+    ]) {
+      for (const destination of ['r8', 'r9', 'r10']) {
+        const instruction = `andn${width === 32 ? 'l' : 'q'} %${alias('r8')}, %${alias('r9')}, %${alias(destination)}`;
+        const source = `movq $0, %rbp\nsubq $1, %rbp\nmovq $${first}, %r8\nmovq $${second}, %r9\n${instruction}\nmovq %${destination}, %rbp`;
+        const model = parseAssembly(source);
+        const assembly = serializeAssembly(model);
+        assert.ok(assembly.includes(instruction));
+        assert.equal(serializeAssembly(parseAssembly(assembly)), assembly);
+        const result = executeProgram(model);
+        const expected = width === 32 ? expected32 : expected64;
+        assert.equal(result.output, expected, instruction);
+        assert.deepEqual(lastFlags(result), { carry: false, zero: expected === '0x0' });
+        if (destination !== 'r8') assert.equal(result.registers.r8, first);
+        if (destination !== 'r9') assert.equal(result.registers.r9, second);
+      }
+    }
+    assert.equal(
+      run(
+        `movq $0x123456789abcdef0, %r8\nandn${width === 32 ? 'l' : 'q'} %${alias('r8')}, %${alias('r8')}, %${alias('r8')}\nmovq %r8, %rbp`,
+      ).output,
+      '0x0',
+    );
+  }
+});
+
+test('ANDN writes only its destination and requires both sources to be initialized', () => {
+  const model = parseAssembly('andnq %r8, %r9, %r10');
+  assert.deepEqual(inferProgramEffects(model).registersWritten, ['r10']);
+  for (const source of [
+    'movq $1, %r8\nandnq %r8, %r9, %rbp',
+    'movq $1, %r9\nandnq %r8, %r9, %rbp',
+    'andnl %r8d, %r8d, %r8d\nmovq %r8, %rbp',
+  ])
+    assert.throws(() => run(source), /до присвоения/);
+});
+
+test('ANDN rejects non-register sources, mismatched widths and invalid arity in text and models', () => {
+  for (const source of [
+    'andnq %rax, %rbp',
+    'andnq %rax, %rbp, %r8, %r9',
+    'andnq %eax, %rbp, %r8',
+    'andnl %eax, %ebp, %r8',
+    'andnq $1, %rbp, %r8',
+    'andnq %rax, $1, %r8',
+    'andnq %rax, %rbp, $1',
+    'andnl BP_kernel_alignment(%rsi), %eax, %ebp',
+    'andnq %rax, $LOAD_PHYSICAL_ADDR, %rbp',
+  ])
+    assert.throws(() => parseAssembly(source), undefined, source);
+  const model = parseAssembly('andnq %rax, %rbp, %r8');
+  model.instructions[0].operands[1] = { kind: 'immediate', value: '1' };
+  assert.throws(() => serializeAssembly(model), /три регистра/);
+});
+
 test('nested expressions using Linux input bindings execute the reference address algorithm', () => {
   const source = `#ifdef CONFIG_RELOCATABLE
 leaq startup_32(%rip), %r8

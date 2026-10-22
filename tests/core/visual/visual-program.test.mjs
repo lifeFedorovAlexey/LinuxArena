@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as Blockly from 'blockly';
-import { REFERENCE_ASM, parseAssembly, executeProgram } from '../../../src/core/placement/index.mjs';
+import {
+  REFERENCE_ASM,
+  parseAssembly,
+  executeProgram,
+  referenceResult,
+} from '../../../src/core/placement/index.mjs';
 import { PLACEMENT_ADAPTER } from '../../../src/core/placement/adapter.mjs';
 import {
   createVisualBlockDefinitions,
@@ -22,6 +27,77 @@ registerVisualExtensions(Blockly);
 Blockly.defineBlocksWithJsonArray(createVisualBlockDefinitions(PLACEMENT_ADAPTER));
 const reference = parseAssembly(REFERENCE_ASM);
 const fresh = () => modelToWorkspace(reference);
+
+test('ANDN survives real Blockly import and serialization for all source/destination aliases', () => {
+  const workspace = new Blockly.Workspace();
+  try {
+    for (const width of [32, 64]) {
+      const alias = (name) => (width === 32 ? `${name}d` : name);
+      for (const [first, second, destination] of [
+        ['r8', 'r9', 'r10'],
+        ['r8', 'r9', 'r8'],
+        ['r8', 'r9', 'r9'],
+        ['r8', 'r8', 'r10'],
+        ['r8', 'r8', 'r8'],
+      ]) {
+        const source = `movq $0x80000000000000f0, %r8\nmovq $0x30, %r9\nandn${width === 32 ? 'l' : 'q'} %${alias(first)}, %${alias(second)}, %${alias(destination)}\nmovq %${destination}, %rbp`;
+        const original = executeProgram(parseAssembly(source));
+        Blockly.serialization.workspaces.load(modelToWorkspace(parseAssembly(source)), workspace);
+        const compiled = compileWorkspace(Blockly.serialization.workspaces.save(workspace));
+        const actual = executeProgram(parseAssembly(compiled.assembly));
+        assert.equal(actual.output, original.output, source);
+        assert.deepEqual(actual.trace.at(-1).flags, original.trace.at(-1).flags);
+        for (const name of ['r8', 'r9', destination])
+          assert.equal(actual.registers[name], original.registers[name], name);
+      }
+    }
+  } finally {
+    workspace.dispose();
+  }
+});
+
+test('ANDN imported expressions retain flags used by a following branch', () => {
+  for (const first of ['0', '255']) {
+    for (const branch of ['jb', 'jae', 'je', 'jne']) {
+      const source = `movq $0, %rbp\nsubq $1, %rbp\nmovq $0, %rbp\nmovq $${first}, %rax\nandnq %rax, %rbp, %rbp\n${branch} 1f\nmovq $7, %rbp\n1:`;
+      const original = executeProgram(parseAssembly(source));
+      const compiled = compileWorkspace(modelToWorkspace(parseAssembly(source)));
+      const actual = executeProgram(parseAssembly(compiled.assembly));
+      assert.equal(actual.output, original.output);
+      assert.deepEqual(actual.trace.at(-1).flags, original.trace.at(-1).flags);
+    }
+  }
+});
+
+test('screenshot ANDN fragment imports exactly, while the alignment variant meets the Linux contract', () => {
+  const screenshot = `#ifdef CONFIG_RELOCATABLE
+leaq startup_32(%rip), %rbp
+movl BP_kernel_alignment(%rsi), %eax
+decl %eax
+addq %rax, %rbp
+andnq %rax, %rbp, %rbp
+cmpq $LOAD_PHYSICAL_ADDR, %rbp
+jae 1f
+#endif
+movq $LOAD_PHYSICAL_ADDR, %rbp
+1:`;
+  const alignment = screenshot.replace('andnq %rax, %rbp, %rbp', 'andnq %rbp, %rax, %rbp');
+  for (const source of [screenshot, alignment]) {
+    const model = parseAssembly(source);
+    const compiled = parseAssembly(compileWorkspace(modelToWorkspace(model)).assembly);
+    for (const relocatable of [true, false]) {
+      for (const loadAddress of ['0', '0x1380000', '0x8000000000000000', '0xffffffffffffffff']) {
+        const inputs = { relocatable, loadAddress };
+        const original = executeProgram(model, inputs);
+        const actual = executeProgram(compiled, inputs);
+        assert.equal(actual.output, original.output);
+        assert.equal(actual.registers.rax, original.registers.rax);
+        assert.deepEqual(actual.trace.at(-1).flags, original.trace.at(-1).flags);
+        if (source === alignment) assert.equal(actual.output, referenceResult(inputs));
+      }
+    }
+  }
+});
 const flatten = (json) => {
   const blocks = [];
   const visit = (block) => {

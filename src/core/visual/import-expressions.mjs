@@ -56,9 +56,14 @@ export function machineExpressions(adapter, allocate, data) {
       expression = {
         type: 'arena_binary',
         id: allocate(`${id}-expression`),
-        fields: { OP: mnemonic, WIDTH: String(width) },
+        fields: { OP: mnemonic === 'andn' ? 'and' : mnemonic, WIDTH: String(width) },
         inputs: {
-          LEFT: { block: variable(destination, `${id}-left`) },
+          LEFT: {
+            block:
+              mnemonic === 'andn'
+                ? unary('not', width, operand(operands[1], `${id}-source`), `${id}-not`)
+                : variable(destination, `${id}-left`),
+          },
           RIGHT: { block: operand(operands[0], `${id}-right`) },
         },
       };

@@ -22,7 +22,20 @@ const aliases = new Map(
     [names32.get(name), { name, width: 32 }],
   ]),
 );
-const mnemonics = new Set(['mov', 'lea', 'add', 'sub', 'and', 'or', 'xor', 'not', 'cmp', 'inc', 'dec']);
+const mnemonics = new Set([
+  'mov',
+  'lea',
+  'add',
+  'sub',
+  'and',
+  'andn',
+  'or',
+  'xor',
+  'not',
+  'cmp',
+  'inc',
+  'dec',
+]);
 const unary = new Set(['not', 'inc', 'dec']);
 const arithmetic = new Set(['add', 'sub', 'and', 'or', 'xor', 'cmp']);
 const U64 = (1n << 64n) - 1n;
@@ -58,6 +71,17 @@ function validateOperand(operand, bindings) {
   throw new Error('Неподдерживаемый регистр или операнд ограниченной ASM-модели.');
 }
 
+function validateSource(source, mnemonic, width, bindings) {
+  if (mnemonic === 'lea') {
+    if (width !== 64 || source.kind !== 'input' || bindings[source.name].form !== 'address')
+      throw new Error('LEA поддерживает только объявленный источник адреса u64.');
+  } else if (source.kind === 'input') {
+    const binding = bindings[source.name];
+    if (binding.form === 'address' || (binding.width !== undefined && binding.width !== width))
+      throw new Error('Разрядность или операция не подходит источнику входа.');
+  } else if (source.kind === 'immediate') validateImmediate(exactUnsigned(source.value), width, mnemonic);
+}
+
 export function validateGenericInstruction(instruction, bindings = {}) {
   if (
     instruction?.op !== 'generic' ||
@@ -67,22 +91,16 @@ export function validateGenericInstruction(instruction, bindings = {}) {
     throw new Error('Неверная операция или разрядность ограниченной ASM-модели.');
   }
   const { mnemonic, width } = instruction;
-  if (!Array.isArray(instruction.operands) || instruction.operands.length !== (unary.has(mnemonic) ? 1 : 2))
+  const operandCount = mnemonic === 'andn' ? 3 : unary.has(mnemonic) ? 1 : 2;
+  if (!Array.isArray(instruction.operands) || instruction.operands.length !== operandCount)
     throw new Error('Неверное число операндов ASM.');
   const operands = instruction.operands.map((operand) => validateOperand(operand, bindings));
   if (operands.at(-1).kind !== 'register')
     throw new Error('Назначение ASM должно быть поддержанным регистром.');
-  if (!unary.has(mnemonic)) {
-    const source = operands[0];
-    if (mnemonic === 'lea') {
-      if (width !== 64 || source.kind !== 'input' || bindings[source.name].form !== 'address')
-        throw new Error('LEA поддерживает только объявленный источник адреса u64.');
-    } else if (source.kind === 'input') {
-      const binding = bindings[source.name];
-      if (binding.form === 'address' || (binding.width !== undefined && binding.width !== width))
-        throw new Error('Разрядность или операция не подходит источнику входа.');
-    } else if (source.kind === 'immediate') validateImmediate(exactUnsigned(source.value), width, mnemonic);
-  }
+  if (mnemonic === 'andn') {
+    if (operands.some((operand) => operand.kind !== 'register'))
+      throw new Error('ANDN поддерживает только три регистра одинаковой разрядности.');
+  } else if (!unary.has(mnemonic)) validateSource(operands[0], mnemonic, width, bindings);
   return { op: 'generic', mnemonic, width, operands };
 }
 
@@ -98,7 +116,7 @@ export function serializeGenericInstruction(instruction, bindings = {}) {
 }
 
 export function parseGenericInstruction(source, bindings = {}) {
-  const match = source.match(/^(movabsq|(?:mov|lea|add|sub|and|or|xor|not|cmp|inc|dec)[lq])\s+(.+)$/);
+  const match = source.match(/^(movabsq|(?:mov|lea|add|sub|and|andn|or|xor|not|cmp|inc|dec)[lq])\s+(.+)$/);
   if (!match) return null;
   const mnemonic = match[1] === 'movabsq' ? 'mov' : match[1].slice(0, -1);
   const width = match[1].endsWith('l') ? 32 : 64;
@@ -151,6 +169,14 @@ export function executeGenericInstruction(instruction, machine, inputValues, bin
   };
   if (mnemonic === 'mov' || mnemonic === 'lea') {
     write(read(operands[0]));
+    return;
+  }
+  if (mnemonic === 'andn') {
+    // AT&T reverses Intel's sources: the second textual operand is inverted.
+    const result = ~read(operands[1]) & read(operands[0]);
+    write(result);
+    machine.carry = false;
+    machine.zero = result === 0n;
     return;
   }
   const left = read(operands.at(-1));
