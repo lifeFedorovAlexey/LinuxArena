@@ -52,18 +52,19 @@ test(
       mkdirSync(dirname(target), { recursive: true });
       copyFileSync(source, target);
     }
-    symlinkSync(
-      join(project, 'node_modules'),
-      join(fixture, 'node_modules'),
-      process.platform === 'win32' ? 'junction' : 'dir',
-    );
     git('init', '--quiet');
     success(invoke(process.execPath, ['tools/git/install.mjs']));
     assert.equal(git('config', '--get', 'core.hooksPath'), '.githooks');
     if (process.platform !== 'win32')
       for (const hook of ['pre-commit', 'pre-push'])
         assert.ok(statSync(join(fixture, '.githooks', hook)).mode & 0o111);
-    git('add', '.');
+    git('add', '--', '.', ':(exclude)node_modules');
+    // Create the dependency link after staging; Git rejects an ignored junction even in an exclusion.
+    symlinkSync(
+      join(project, 'node_modules'),
+      join(fixture, 'node_modules'),
+      process.platform === 'win32' ? 'junction' : 'dir',
+    );
     const identity = [
       '-c',
       'user.name=Quality Gate Fixture',
