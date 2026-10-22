@@ -1,0 +1,60 @@
+@media (max-width: 1100px) {
+  .scene-hint {
+    display: none;
+  }
+  .node-label {
+    min-width: 100px;
+  }
+  .node-label .node-name {
+    font-size: 11px;
+  }
+  .node-label .node-subtitle {
+    font-size: 8px;
+  }
+  .node-label .node-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+@media (max-width: 760px) {
+  .node-label .node-name {
+    font-size: 11px;
+  }
+  .node-label .node-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+  .node-label {
+    min-width: 90px;
+    padding: 7px 3px;
+  }
+  .node-label.operation .node-name {
+    font-size: 10px;
+  }
+  .stage-topline {
+    top: 17px;
+    left: 17px;
+    right: 17px;
+  }
+  .tiny-pill {
+    font-size: 9px;
+  }
+  .trace-banner {
+    font-size: 9px;
+    padding: 8px 10px;
+    gap: 7px;
+  }
+  .trace-banner code {
+    margin-left: 3px;
+    font-size: 9px;
+  }
+  .node-label .node-badge {
+    width: 12px;
+    height: 12px;
+    right: 4px;
+  }
+  .node-badge svg {
+    width: 8px;
+    height: 8px;
+  }
+}

@@ -11,3 +11,11 @@
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Local development
+node_modules/
+dist/
+engine/target/
+.arena/
+artifacts/
+.quality/

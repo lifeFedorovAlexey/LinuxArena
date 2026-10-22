@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "linuxarena": {
+      "command": "node",
+      "args": ["D:/LinuxArena/src/service/mcp/server.mjs"],
+      "env": { "LINUXARENA_URL": "http://127.0.0.1:4173" }
+    }
+  }
+}

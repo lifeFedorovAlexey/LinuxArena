@@ -1,0 +1,103 @@
+.workspace {
+  height: min(59vh, 620px);
+  min-height: 430px;
+  border: 1px solid #303b35;
+  border-radius: 12px;
+  display: flex;
+  overflow: hidden;
+  background: #172020;
+  position: relative;
+  box-shadow: 0 16px 40px #00000016;
+}
+.scene-area {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 43% 43%, #27382f38 0, transparent 65%);
+}
+.scene-host {
+  position: absolute;
+  inset: 0;
+}
+.scene-host canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.stage-topline {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.tiny-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #9eafa3;
+}
+.tiny-pill i {
+  opacity: 0.7;
+}
+.scene-toolbar {
+  position: absolute;
+  bottom: 17px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.scene-toolbar > * {
+  pointer-events: auto;
+}
+.view-controls {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid #35413a;
+  border-radius: 8px;
+  background: #16201cdf;
+  box-shadow: 0 4px 8px #0002;
+}
+.view-controls .icon-button {
+  width: 30px;
+  height: 29px;
+}
+.view-controls svg {
+  width: 14px;
+  height: 14px;
+}
+.scene-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: #84958a;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.hint-key {
+  font: 11px var(--mono);
+  border: 1px solid #455348;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.back-button svg {
+  width: 14px;
+  height: 14px;
+}

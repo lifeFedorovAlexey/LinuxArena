@@ -1,0 +1,39 @@
+.arena-workbench.editing {
+  position: relative;
+  align-items: start;
+  gap: 16px;
+}
+.arena-workbench.editing #live-contract {
+  margin: 0 0 12px;
+}
+@media (min-width: 1100px) {
+  .arena-workbench.editing {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+  }
+  .arena-workbench.editing #workspace {
+    order: 1;
+  }
+  .arena-workbench.editing #live-contract {
+    order: 2;
+    margin: 0;
+    position: sticky;
+    top: 12px;
+  }
+  .arena-workbench.editing .inspector {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 20;
+    box-shadow: -15px 0 40px #0006;
+  }
+}
+@media (max-width: 1099px) {
+  .arena-workbench.editing #live-contract {
+    background: #17221b;
+  }
+  .arena-workbench.editing #workspace {
+    margin-top: 12px;
+  }
+}

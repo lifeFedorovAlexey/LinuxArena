@@ -1,0 +1,56 @@
+{
+  "version": "6.18.58",
+  "ref": "v6.18.58",
+  "repository": "https://github.com/gregkh/linux",
+  "retrievedAt": "2026-10-22",
+  "architecture": "x86-64",
+  "bootProtocol": "Direct 64-bit entry into the compressed kernel (offset 0x200)",
+  "entry": { "symbol": "startup_64", "path": "arch/x86/boot/compressed/head_64.S", "line": 278 },
+  "fragment": { "id": "decompression-address", "path": "arch/x86/boot/compressed/head_64.S", "firstLine": 315, "lastLine": 326 },
+  "configuration": { "CONFIG_X86_64": true, "CONFIG_RELOCATABLE": true, "CONFIG_PHYSICAL_START": "0x1000000", "CONFIG_PHYSICAL_ALIGN": "0x200000", "LOAD_PHYSICAL_ADDR": "0x1000000" },
+  "scope": "Address arithmetic only; no privileged instruction execution, full-kernel build or boot validation.",
+  "license": "GPL-2.0-only; retained original notices and LICENSES/preferred/GPL-2.0",
+  "files": [
+    {
+      "path": "linux/arch/x86/boot/compressed/head_64.S",
+      "upstreamPath": "arch/x86/boot/compressed/head_64.S",
+      "url": "https://github.com/gregkh/linux/blob/v6.18.58/arch/x86/boot/compressed/head_64.S",
+      "kind": "original",
+      "upstreamBlob": "d9dab940ff6264f09661a7e14b6bca81068a7804",
+      "sha256": "418aa5f554ea94f62a6ea3bd7bb90e71c44d293e1e329ed4c1a94e76d8ef9641"
+    },
+    {
+      "path": "linux/arch/x86/include/asm/boot.h",
+      "upstreamPath": "arch/x86/include/asm/boot.h",
+      "url": "https://github.com/gregkh/linux/blob/v6.18.58/arch/x86/include/asm/boot.h",
+      "kind": "original",
+      "upstreamBlob": "f7b67cb7391562e984323a66563cf532da54fdcf",
+      "sha256": "8e0b0b1040010c5260cbe5be3089bee130d160c261b58595fcfebec04b0e81e3"
+    },
+    {
+      "path": "linux/arch/x86/include/asm/page_types.h",
+      "upstreamPath": "arch/x86/include/asm/page_types.h",
+      "url": "https://github.com/gregkh/linux/blob/v6.18.58/arch/x86/include/asm/page_types.h",
+      "kind": "original",
+      "upstreamBlob": "018a8d906ca3590ab793966d4fe290e2c3ed61ed",
+      "sha256": "4b710a6891bd7e6e7d51b81a7fb083a8beb6ece020111ea55780bbb5dab1eefd"
+    },
+    {
+      "path": "linux/LICENSES/preferred/GPL-2.0",
+      "upstreamPath": "LICENSES/preferred/GPL-2.0",
+      "url": "https://github.com/gregkh/linux/blob/v6.18.58/LICENSES/preferred/GPL-2.0",
+      "kind": "original",
+      "upstreamBlob": "ea8e93dc44bc462a2be34e484432cf2b9ec88527",
+      "sha256": "8780e78a1a737e127f25a65f6d95269bffd36158dc261114de7859b490bfc5aa"
+    },
+    {
+      "path": "linux/arch/x86/Kconfig.excerpt",
+      "upstreamPath": "arch/x86/Kconfig",
+      "url": "https://github.com/gregkh/linux/blob/v6.18.58/arch/x86/Kconfig",
+      "kind": "excerpt",
+      "upstreamBlob": "8623c4a5ce7b5314c33224e876f5e622131b5a8c",
+      "sourceRanges": [[2024, 2026], [2123, 2125]],
+      "sha256": "6129ecd2467f25b7f3d2279758891d3a222965052810edca2d06aaf7658d70a9"
+    }
+  ]
+}
