@@ -14,6 +14,7 @@ import {
 } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readInventory } from '../../tools/quality/inventory.mjs';
 
 const project = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 test(
@@ -42,12 +43,10 @@ test(
       return result.stdout.trim();
     };
     const git = (...args) => success(invoke('git', args));
-    const inventory = success(
-      invoke('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], project),
-    );
-    for (const name of new Set(inventory.split('\0').filter(Boolean))) {
+    // A pre-push source snapshot has no .git of its own. Use the same complete
+    // source inventory as the gate rather than inheriting its parent checkout.
+    for (const name of readInventory(project).keys()) {
       const source = join(project, name);
-      if (!existsSync(source)) continue;
       const target = resolve(fixture, name);
       assert.ok(!relative(fixture, target).startsWith('..'));
       mkdirSync(dirname(target), { recursive: true });
