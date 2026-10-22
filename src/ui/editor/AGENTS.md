@@ -20,6 +20,7 @@ window.Blockly, core/visual/language, core/placement/adapter и core/placement/v
 | [workspace.mjs](workspace.mjs)       | Создание, загрузка и размеры редактируемого и reference workspace       |
 | [drafts.mjs](drafts.mjs)             | Версии, миграции, восстановление и сохранение локального черновика      |
 | [appearance.mjs](appearance.mjs)     | Единственная регистрация определений, theme, toolbox и renderer options |
+| [localization.mjs](localization.mjs) | Перевод подписей Blockly без изменения полей, соединений и undo         |
 | [appearance.css](appearance.css)     | Единый вид Blockly в palette, editor и reference                        |
 | [layout.css](layout.css)             | Размещение рабочего поля и поверхностей Blockly                         |
 | [toolbar.css](toolbar.css)           | Действия редактора, вкладки и статус черновика                          |

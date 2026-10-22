@@ -25,4 +25,5 @@
 | [workspace-controller.mjs](workspace-controller.mjs) | Переходы слоёв, принятие состояния и сохранение ASM     |
 | [run-controller.mjs](run-controller.mjs)             | Пошаговая трасса, проверки и запрос измерений           |
 | [bindings.mjs](bindings.mjs)                         | События статических контролов страницы и клавиатуры     |
+| [language.mjs](language.mjs)                         | Переключение языка без перезагрузки и записи программы  |
 | [styles/AGENTS.md](styles/AGENTS.md)                 | Стили оболочки и её адаптивная компоновка               |

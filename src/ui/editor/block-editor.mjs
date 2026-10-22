@@ -1,4 +1,5 @@
 import { Blockly } from './appearance.mjs';
+import { localizeWorkspaces } from './localization.mjs';
 import { createEditorWorkspace, createReferenceWorkspace, loadWorkspace } from './workspace.mjs';
 import { createDraftController } from './drafts.mjs';
 import { parseAssembly, executeProgram, getReferenceModel } from '../../core/placement/index.mjs';
@@ -186,5 +187,9 @@ export class BlockEditor {
 
   resize() {
     Blockly.svgResize(this.activeWorkspace);
+  }
+
+  localize() {
+    localizeWorkspaces(this.workspace, this.referenceWorkspace);
   }
 }

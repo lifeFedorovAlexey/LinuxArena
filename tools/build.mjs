@@ -17,7 +17,7 @@ await cp(resolve(root, 'node_modules/three/examples/jsm'), resolve(output, 'vend
   recursive: true,
 });
 await mkdir(resolve(output, 'vendor/blockly/msg'), { recursive: true });
-for (const file of ['blockly_compressed.js', 'msg/ru.js', 'LICENSE'])
+for (const file of ['blockly_compressed.js', 'msg/ru.js', 'msg/en.js', 'LICENSE'])
   await cp(resolve(root, 'node_modules/blockly', file), resolve(output, 'vendor/blockly', file));
 await cp(resolve(root, 'node_modules/blockly/media'), resolve(output, 'vendor/blockly/media'), {
   recursive: true,

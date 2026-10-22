@@ -179,3 +179,22 @@
     gap: 9px;
   }
 }
+@media (max-width: 480px) {
+  .release {
+    display: none;
+  }
+  .workspace-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .workspace-heading > div:first-child {
+    flex: 1 0 100%;
+    min-width: 0;
+  }
+  .heading-actions {
+    margin-left: auto;
+  }
+  .layer-index {
+    white-space: nowrap;
+  }
+}

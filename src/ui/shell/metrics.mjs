@@ -1,3 +1,4 @@
+import { t, formatNumber } from '../shared/i18n/index.mjs';
 import { $, escape } from '../shared/dom.mjs';
 import { icon } from '../shared/icons.mjs';
 
@@ -14,10 +15,10 @@ export function renderMetrics(model, runBenchmark) {
   $('#metrics').hidden = model.layer === 'placement';
   if (model.layer === 'root') {
     $('#metrics').innerHTML =
-      metric('Загрузка ядра', '—', 'мс', 'Пока не измерено') +
-      metric('Распаковка', '—', 'мс', 'Пока не измерено', { type: 'box' }) +
-      metric('Инициализация', '—', 'мс', 'Пока не измерено', { type: 'layers' }) +
-      metric('Открытый маршрут', '01', 'блок', 'startup_64 → адрес распаковки', {
+      metric(t('Загрузка ядра'), '—', t('мс'), t('Пока не измерено')) +
+      metric(t('Распаковка'), '—', t('мс'), t('Пока не измерено'), { type: 'box' }) +
+      metric(t('Инициализация'), '—', t('мс'), t('Пока не измерено'), { type: 'layers' }) +
+      metric(t('Открытый маршрут'), '01', t('блок'), t('startup_64 → адрес распаковки'), {
         highlight: true,
         type: 'branch',
       });
@@ -25,20 +26,20 @@ export function renderMetrics(model, runBenchmark) {
     const native = model.state?.checks?.native,
       candidate = model.state?.checks?.candidate,
       bench = model.state?.benchmark;
-    const count = candidate ? new Intl.NumberFormat('ru-RU').format(candidate.passed) : '—';
+    const count = candidate ? formatNumber(candidate.passed) : '—';
     const asm = bench?.reference_median,
       rust = bench?.rust_median;
-    const scope = model.layer === 'startup' ? 'Арифметический блок' : 'Корректность кандидата';
+    const scope = model.layer === 'startup' ? t('Арифметический блок') : t('Корректность кандидата');
     $('#metrics').innerHTML =
       metric(
         scope,
         count,
-        candidate ? `/ ${candidate.total}` : 'тестов',
+        candidate ? `/ ${formatNumber(candidate.total)}` : t('тестов'),
         candidate?.status === 'failed'
-          ? `${candidate.failed} несовпадений`
+          ? t('{count} несовпадений', { count: formatNumber(candidate.failed) })
           : candidate
-            ? 'Модель · не проверка загрузки'
-            : 'Пока не проверено',
+            ? t('Модель · не проверка загрузки')
+            : t('Пока не проверено'),
         {
           highlight: candidate?.status === 'passed',
           warning: candidate?.status === 'failed',
@@ -46,28 +47,32 @@ export function renderMetrics(model, runBenchmark) {
         },
       ) +
       metric(
-        'Rust ↔ исходные инструкции',
-        native?.cases ? new Intl.NumberFormat('ru-RU').format(native.cases) : '—',
-        'тестов',
+        t('Rust ↔ исходные инструкции'),
+        native?.cases ? formatNumber(native.cases) : '—',
+        t('тестов'),
         native?.status === 'passed'
-          ? 'Арифметика · 0 несовпадений'
+          ? t('Арифметика · 0 несовпадений')
           : native?.status === 'unavailable'
-            ? 'Требуется сборка engine'
-            : 'После запуска проверки',
+            ? t('Требуется сборка engine')
+            : t('После запуска проверки'),
         { highlight: native?.status === 'passed', type: 'code' },
       ) +
       metric(
-        'Эталон · ASM',
-        Number.isFinite(asm) ? asm.toFixed(2) : '—',
-        'нс/оп',
-        asm ? '9 серий · повторить замер' : 'Измерить арифметику',
+        t('Эталон · ASM'),
+        Number.isFinite(asm)
+          ? formatNumber(asm, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : '—',
+        t('нс/оп'),
+        asm ? t('9 серий · повторить замер') : t('Измерить арифметику'),
         { action: 'bench' },
       ) +
       metric(
-        'Фиксированный перенос · Rust',
-        Number.isFinite(rust) ? rust.toFixed(2) : '—',
-        'нс/оп',
-        rust ? 'Не результат изменённого графа' : 'Без присвоения рекорда',
+        t('Фиксированный перенос · Rust'),
+        Number.isFinite(rust)
+          ? formatNumber(rust, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : '—',
+        t('нс/оп'),
+        rust ? t('Не результат изменённого графа') : t('Без присвоения рекорда'),
         { type: 'chip' },
       );
   }

@@ -1,7 +1,11 @@
+import { t } from '../shared/i18n/index.mjs';
 import { $ } from '../shared/dom.mjs';
 import { api } from './api.mjs';
 
-export function createRunController(model, { editor, toast, renderChrome, applyState, setReferenceView }) {
+export function createRunController(
+  model,
+  { editor, contractView, toast, renderChrome, applyState, setReferenceView },
+) {
   async function animateTrace() {
     if (model.layer !== 'placement' || !model.state) return;
     if (!editor.referenceMode && !model.visualReady) return;
@@ -19,7 +23,7 @@ export function createRunController(model, { editor, toast, renderChrome, applyS
     for (const entry of trace) {
       if (token !== model.traceToken || model.layer !== 'placement') return;
       editor.highlight(entry.id);
-      $('#trace-label').textContent = entry.label;
+      $('#trace-label').textContent = t(entry.label);
       $('#trace-value').textContent = entry.registers.rbp ?? entry.registers.rax ?? '—';
       await new Promise((resolve) => {
         setTimeout(resolve, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180);
@@ -27,7 +31,7 @@ export function createRunController(model, { editor, toast, renderChrome, applyS
     }
     if (token === model.traceToken) {
       editor.highlightResult();
-      $('#trace-label').textContent = editor.referenceMode ? 'Linux · адрес получен' : 'Адрес получен';
+      $('#trace-label').textContent = editor.referenceMode ? t('Linux · адрес получен') : t('Адрес получен');
       $('#trace-value').textContent = evaluation.output;
       setTimeout(() => {
         if (token === model.traceToken) {
@@ -39,23 +43,23 @@ export function createRunController(model, { editor, toast, renderChrome, applyS
   }
 
   async function runCheck() {
-    if (editor.referenceMode) setReferenceView(false);
-    if (model.layer === 'placement' && !(await editor.commit())) return;
     if (model.busy) return;
     model.busy = true;
     $('#run-button').disabled = true;
     renderChrome();
     try {
-      const promise = api('check', {});
-      animateTrace();
-      const next = await promise;
+      if (editor.referenceMode) setReferenceView(false);
+      if (model.layer === 'placement' && !(await editor.commit())) return;
+      const [next] = await Promise.all([api('check', {}), contractView.runChecks()]);
       applyState(next);
+      contractView.finishChecks();
       const result = next.checks.candidate;
       toast(
-        result.status === 'passed' ? 'Проверочный набор пройден' : 'Обнаружено расхождение с эталоном',
+        result.status === 'passed' ? t('Проверочный набор пройден') : t('Обнаружено расхождение с эталоном'),
         result.status !== 'passed',
       );
     } catch (error) {
+      contractView.finishChecks(error.message);
       toast(error.message, true);
     } finally {
       model.busy = false;
@@ -69,14 +73,14 @@ export function createRunController(model, { editor, toast, renderChrome, applyS
     model.busy = true;
     $('#run-button').disabled = true;
     renderChrome();
-    toast('Измеряем фиксированный Rust-перенос и ASM');
+    toast(t('Измеряем фиксированный Rust-перенос и ASM'));
     try {
       const next = await api('bench', {});
       applyState(next);
       toast(
         next.benchmark.status === 'measured'
-          ? '9 серий измерений завершены · локальный микротест'
-          : (next.benchmark.reason ?? 'Измерение недоступно'),
+          ? t('9 серий измерений завершены · локальный микротест')
+          : (next.benchmark.reason ?? t('Измерение недоступно')),
         next.benchmark.status !== 'measured',
       );
     } catch (error) {

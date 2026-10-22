@@ -27,4 +27,5 @@ model связывает machine с контрактом; adapter связыва
 | [layers.mjs](layers.mjs)               | Навигация от ядра к текущему фрагменту                            |
 | [story.mjs](story.mjs)                 | Объяснение фактического пути и сравнение с эталоном               |
 | [cases.mjs](cases.mjs)                 | Контрактные сценарии и диагностика нарушений                      |
+| [requirements.mjs](requirements.mjs)   | Требования и несколько именованных проверок для каждого           |
 | [history/AGENTS.md](history/AGENTS.md) | Сохранение и перенос прежних версий черновика                     |

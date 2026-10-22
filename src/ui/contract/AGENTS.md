@@ -19,6 +19,8 @@ DOM, публичный core/placement и callbacks оболочки для из
 | [contract-view.mjs](contract-view.mjs) | Состояние формы, события и жизненный цикл компонента        |
 | [template.mjs](template.mjs)           | Первичная разметка контракта и примеров                     |
 | [render.mjs](render.mjs)               | Обновление результатов и диагностики без пересоздания формы |
+| [render-cases.mjs](render-cases.mjs)   | Требования с вложенными проверками и ошибки полного набора  |
+| [address.mjs](address.mjs)             | Локализация точного представления адресов из core           |
 | [view.css](view.css)                   | Основная компоновка, входы и результаты                     |
 | [cases.css](cases.css)                 | Примеры, ошибки и переход к проблемному блоку               |
 | [responsive.css](responsive.css)       | Компоновка контракта на узких экранах                       |

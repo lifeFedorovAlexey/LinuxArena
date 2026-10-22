@@ -1,7 +1,11 @@
+import { t, initializeLocale, LOCALES, getLocale, setLocale } from '../shared/i18n/index.mjs';
+import { LanguageSwitcher } from '../shared/language-switcher/language-switcher.mjs';
+import { bindLanguage } from './language.mjs';
+import { prepareBlocklyLocales } from '../editor/localization.mjs';
 import { ArenaScene } from '../scene/scene.mjs';
 import { BlockEditor } from '../editor/block-editor.mjs';
 import { ContractView } from '../contract/contract-view.mjs';
-import { BOOT_LAYERS, evaluateContractCases, sameContractInputs } from '../../core/placement/index.mjs';
+import { BOOT_LAYERS } from '../../core/placement/index.mjs';
 import { $, escape } from '../shared/dom.mjs';
 import { icon } from '../shared/icons.mjs';
 import { createToast } from '../shared/feedback.mjs';
@@ -13,6 +17,14 @@ import { createWorkspaceController } from './workspace-controller.mjs';
 import { createRunController } from './run-controller.mjs';
 import { bindControls } from './bindings.mjs';
 
+initializeLocale();
+await prepareBlocklyLocales();
+const switcher = new LanguageSwitcher($('#language-switcher'), {
+  languages: LOCALES,
+  value: getLocale(),
+  label: t('Язык интерфейса'),
+  onChange: setLocale,
+});
 const model = {
   state: null,
   layer: 'root',
@@ -22,6 +34,8 @@ const model = {
   visualReady: true,
   sourceDirty: false,
   lastRemoteRevision: -1,
+  connection: 'Локально',
+  draft: { valid: true },
 };
 const actions = {};
 const toast = createToast();
@@ -32,11 +46,18 @@ const scene = new ArenaScene($('#scene-host'), $('#node-labels'), {
   onNode: (node) => {
     if (model.transitioning) return;
     if (node.target) actions.navigate(node.target, node.id);
-    else if (node.kind === 'hardware') toast(`${node.title}: аппаратный этап · ${node.symbol}`);
+    else if (node.kind === 'hardware')
+      toast(t('{title}: аппаратный этап · {symbol}', { title: node.title, symbol: node.symbol }));
     else if (node.source)
-      toast(`${node.title}: следующий участок разбора · строки ${node.source.start}–${node.source.end}`);
+      toast(
+        t('{title}: следующий участок разбора · строки {start}–{end}', { title: node.title, ...node.source }),
+      );
     else
-      toast(node.kind === 'external' ? 'Загрузчик передаёт управление ядру' : 'Этот участок ещё не разобран');
+      toast(
+        node.kind === 'external'
+          ? t('Загрузчик передаёт управление ядру')
+          : t('Этот участок ещё не разобран'),
+      );
   },
   renderLabel: (node, operation) =>
     `${operation ? '' : `<span class="node-icon">${icon(node.icon ?? 'box')}</span>`}<span class="node-name">${escape(node.title)}</span><span class="node-subtitle">${escape(node.subtitle)}</span>${node.target ? `<span class="node-badge">${icon('chevron')}</span>` : ''}`,
@@ -47,14 +68,16 @@ const contractView = new ContractView($('#live-contract'), {
     actions.applyState(await api('inputs', inputs));
     actions.animateTrace();
   },
-  onProblem: async ({ inputs }) => {
+  onPreview: (inputs) => {
+    model.traceToken++;
+    $('#trace-banner').hidden = true;
+    editor.setInputs(inputs ?? model.state.inputs);
+  },
+  onProblem: async ({ inputs, instructionIds }) => {
     actions.setReferenceView(false);
     if (!(await editor.commit())) return;
-    actions.applyState(await api('inputs', inputs));
-    const problem = evaluateContractCases(model.state).cases.find((item) =>
-      sameContractInputs(item.inputs, inputs),
-    );
-    editor.showProblem(problem?.diagnostic?.instructionIds ?? []);
+    editor.setInputs(inputs);
+    editor.showProblem(instructionIds);
     await actions.animateTrace();
   },
 });
@@ -65,11 +88,12 @@ const editor = new BlockEditor($('#flow-host'), {
     $('#delete-block').disabled = editor.referenceMode || !id || id === 'arena-entry';
   },
   onDraft: (draft) => {
+    model.draft = draft;
     model.visualReady = draft.valid;
     $('#trace-button').disabled = !editor.referenceMode && !model.visualReady;
     $('#run-button').disabled = model.busy || (model.layer === 'placement' && !model.visualReady);
     contractView.setDraftState(draft);
-    $('#draft-status').textContent = draft.pending ? '…' : draft.valid ? 'Сохранено' : draft.error;
+    $('#draft-status').textContent = draft.pending ? '…' : draft.valid ? t('Сохранено') : t(draft.error);
     $('#draft-status').classList.toggle('invalid', !draft.valid && !draft.pending);
     $('#reload-blocks').hidden = draft.valid || draft.pending;
   },
@@ -88,8 +112,12 @@ Object.assign(
     ...inspector,
   }),
 );
-Object.assign(actions, createRunController(model, { editor, toast, renderChrome: render, ...actions }));
+Object.assign(
+  actions,
+  createRunController(model, { editor, contractView, toast, renderChrome: render, ...actions }),
+);
 bindControls(model, { editor, scene, toast, ...inspector, ...actions });
+bindLanguage(model, { switcher, editor, scene, render, renderInputLabels: inspector.renderInputLabels });
 try {
   actions.applyState(await api('state'));
   const requested = location.hash.slice(1);
@@ -100,15 +128,19 @@ try {
   events.addEventListener('state', (event) => {
     actions.applyState(JSON.parse(event.data), { remote: true });
     $('#connection').classList.remove('offline');
-    $('#connection').innerHTML = '<i></i> В реальном времени';
+    model.connection = 'В реальном времени';
+    render();
   });
   events.onerror = () => {
     $('#connection').classList.add('offline');
-    $('#connection').innerHTML = '<i></i> Переподключение';
+    model.connection = 'Переподключение';
+    render();
   };
 } catch (error) {
   render();
   scene.setGraph(graphFor('root'));
-  toast(`Сервис недоступен: ${error.message}`, true);
+  toast(t('Сервис недоступен: {message}', { message: t(error.message) }), true);
+  model.connection = 'Переподключение';
+  render();
   $('#connection').classList.add('offline');
 }

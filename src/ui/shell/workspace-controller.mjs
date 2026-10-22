@@ -1,3 +1,4 @@
+import { t } from '../shared/i18n/index.mjs';
 import { BOOT_LAYERS, parseAssembly } from '../../core/placement/index.mjs';
 import { $ } from '../shared/dom.mjs';
 import { graphFor } from './layer-graph.mjs';
@@ -19,7 +20,7 @@ export function createWorkspaceController(
     if (logic) {
       $('#scene-fallback').hidden = true;
       editor.setGraph(model.state.program.model);
-      editor.setInputs(model.state.inputs);
+      editor.setInputs(contractView.preview?.inputs ?? model.state.inputs);
       editor.resize();
       contractView.update(model.state);
     } else scene.setGraph(graphFor(model.layer));
@@ -55,13 +56,13 @@ export function createWorkspaceController(
       changed &&
       !editor.pending
     )
-      toast('Алгоритм обновлён');
+      toast(t('Алгоритм обновлён'));
     model.lastRemoteRevision = next.revision;
     renderInputs();
     renderChrome();
     if (model.layer === 'placement' && changed && !model.transitioning)
       editor.setGraph(model.state.program.model);
-    editor.setInputs(model.state.inputs);
+    editor.setInputs(contractView.preview?.inputs ?? model.state.inputs);
   }
 
   function setReferenceView(enabled) {
@@ -86,7 +87,7 @@ export function createWorkspaceController(
     applyState(next);
     if (!fromBlocks) {
       editor.reload(next.program.model);
-      toast('Блоки и код синхронизированы');
+      toast(t('Блоки и код синхронизированы'));
     }
   }
   return { showLayer, navigate, applyState, setReferenceView, saveAssembly };

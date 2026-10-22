@@ -13,6 +13,7 @@ export {
 } from './model.mjs';
 export { validateInputs, referenceResult } from './inputs.mjs';
 export { explainProgram, getReferenceModel } from './story.mjs';
-export { CONTRACT_CASES, sameContractInputs, formatAddress, evaluateContractCases } from './cases.mjs';
+export { CONTRACT_REQUIREMENTS, CONTRACT_CASES } from './requirements.mjs';
+export { sameContractInputs, formatAddress, evaluateContractCase, evaluateContractCases } from './cases.mjs';
 export { PLACEMENT_ADAPTER } from './adapter.mjs';
 export { placementInstruction } from './instructions.mjs';

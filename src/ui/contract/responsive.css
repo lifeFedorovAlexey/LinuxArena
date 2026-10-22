@@ -2,38 +2,6 @@
   .contract-view {
     padding: 12px 14px;
   }
-  .cv-heading {
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .cv-title {
-    font-size: 10px;
-  }
-  .cv-state {
-    font-size: 9px;
-  }
-  .cv-goal {
-    font-size: 10px;
-    line-height: 1.4;
-    margin-bottom: 10px;
-  }
-  .cv-goal > span {
-    font-size: 9px;
-    margin-top: 2px;
-  }
-  .cv-fields {
-    gap: 7px;
-  }
-  .cv-field > span {
-    font-size: 9px;
-  }
-  .cv-field input {
-    font-size: 10px;
-    padding: 7px;
-  }
-  .cv-field small {
-    font-size: 8px;
-  }
   .cv-flow {
     gap: 8px;
     grid-template-columns: minmax(0, 1.15fr) 18px minmax(0, 1fr);
@@ -48,50 +16,8 @@
   .cv-output strong {
     font-size: 15px;
   }
-  .cv-output small {
-    font-size: 8px;
-  }
-  .cv-case {
-    padding: 7px;
-  }
-  .cv-case-title {
-    font-size: 9px;
-    gap: 5px;
-  }
-  .cv-case-mark {
-    width: 13px;
-    height: 13px;
-    font-size: 11px;
-  }
-  .cv-case-path {
-    font-size: 9px;
-    gap: 4px;
-    margin-left: 18px;
-  }
-  .cv-case-actual,
-  .cv-case-reason {
-    font-size: 9px;
-    margin-left: 18px;
-  }
-  .cv-rule-row {
-    margin-top: 7px;
-  }
-  .cv-cases {
-    gap: 6px;
-  }
 }
-@media (max-width: 700px) {
-  .cv-cases {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .cv-case-title {
-    font-size: 10px;
-  }
-  .cv-case-path {
-    font-size: 10px;
-  }
-}
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   .contract-view {
     padding: 12px;
   }
@@ -102,8 +28,11 @@
   .cv-flow-arrow {
     display: none;
   }
-  .cv-outputs {
-    grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr);
+  .cv-fields {
+    gap: 6px;
+  }
+  .cv-field > span {
+    font-size: 9px;
   }
   .cv-output {
     min-height: 68px;
@@ -111,19 +40,8 @@
   .cv-output strong {
     font-size: 17px;
   }
-  .cv-case-title {
-    font-size: 9px;
-  }
-  .cv-case-path {
-    font-size: 9px;
-  }
-  .cv-rule-row {
-    flex-wrap: wrap;
-  }
-  .cv-heading {
-    gap: 6px;
-  }
-  .cv-state {
-    max-width: 88px;
+  .cv-requirements {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
   }
 }
