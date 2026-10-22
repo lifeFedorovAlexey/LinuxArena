@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { createSnapshot, removeSnapshot, checkSnapshot } from '../../tools/git/hooks.mjs';
 
 function fixture(t) {
@@ -17,6 +17,49 @@ function fixture(t) {
   git('init', '--quiet');
   return { root, git };
 }
+test('repository attributes keep checkout and snapshot bytes equal with either autocrlf setting', (t) => {
+  for (const autocrlf of ['true', 'false']) {
+    const { root, git } = fixture(t);
+    git('config', 'core.autocrlf', autocrlf);
+    writeFileSync(
+      join(root, '.gitattributes'),
+      readFileSync(new URL('../../.gitattributes', import.meta.url)),
+    );
+    const files = new Map([
+      ['package.json', '{}\n'],
+      ['package-lock.json', '{}\n'],
+      ['README.md', '# Fixture\n'],
+      ['workflow.yml', 'name: fixture\n'],
+      ['config.yaml', 'name: fixture\n'],
+      ['Cargo.toml', '[package]\n'],
+      ['.githooks/pre-commit', '#!/bin/sh\nexit 0\n'],
+      ['reference/linux/probe.S', 'preserve upstream\r\nbytes\r\n'],
+      ['probe.bin', new Uint8Array([0, 13, 10, 255, 10])],
+    ]);
+    for (const [name, bytes] of files) {
+      mkdirSync(dirname(join(root, name)), { recursive: true });
+      writeFileSync(join(root, name), bytes);
+    }
+    git('add', '.');
+    for (const name of files.keys()) rmSync(join(root, name));
+    git('checkout-index', '--all');
+    const { directory } = createSnapshot(root);
+    try {
+      for (const [name, bytes] of files) {
+        const expected = Buffer.from(bytes);
+        assert.deepEqual(readFileSync(join(root, name)), expected, name + ' checkout, autocrlf=' + autocrlf);
+        assert.deepEqual(
+          readFileSync(join(directory, name)),
+          expected,
+          name + ' snapshot, autocrlf=' + autocrlf,
+        );
+      }
+    } finally {
+      removeSnapshot(root, directory);
+    }
+  }
+});
+
 test('pre-commit snapshot reads staged bytes, including partially staged and deleted files', (t) => {
   const { root, git } = fixture(t);
   writeFileSync(join(root, 'sample.mjs'), 'const staged = true;\n');
