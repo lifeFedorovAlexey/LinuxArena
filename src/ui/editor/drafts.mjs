@@ -1,3 +1,4 @@
+import { t } from '../shared/i18n/index.mjs';
 import {
   modelToWorkspace,
   compileWorkspace,
@@ -62,7 +63,7 @@ export function createDraftController(editor) {
     } catch {
       if (!editor.storageWarning)
         editor.onNotice?.(
-          'Не удалось сохранить локальный черновик. Не закрывай вкладку до сохранения рабочего алгоритма.',
+          t('Не удалось сохранить локальный черновик. Не закрывай вкладку до сохранения рабочего алгоритма.'),
         );
       editor.storageWarning = true;
     }
@@ -81,12 +82,14 @@ export function createDraftController(editor) {
     } catch {
       editor.preserveStoredDraft = true;
     }
-    const reason = baseChanged ? 'Черновик относится к другой версии кода.' : 'Черновик не удалось открыть.';
+    const reason = baseChanged
+      ? t('Черновик относится к другой версии кода.')
+      : t('Черновик не удалось открыть.');
     editor.onNotice?.(
       `${reason} ${
         backedUp
-          ? 'Исходная запись и отдельная копия сохранены; открыт рабочий алгоритм.'
-          : 'Исходная запись защищена от перезаписи; локальное сохранение недоступно.'
+          ? t('Исходная запись и отдельная копия сохранены; открыт рабочий алгоритм.')
+          : t('Исходная запись защищена от перезаписи; локальное сохранение недоступно.')
       }`,
     );
   }

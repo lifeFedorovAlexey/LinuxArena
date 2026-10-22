@@ -1,13 +1,10 @@
-import {
-  createVisualBlockDefinitions,
-  createVisualToolbox,
-  registerVisualExtensions,
-} from '../../core/visual/language.mjs';
+import { createVisualBlockDefinitions, registerVisualExtensions } from '../../core/visual/language.mjs';
 import { PLACEMENT_ADAPTER } from '../../core/placement/adapter.mjs';
+import { defineLocalizedBlocks } from './localization.mjs';
 
 export const Blockly = window.Blockly;
 registerVisualExtensions(Blockly);
-Blockly.common.defineBlocksWithJsonArray(createVisualBlockDefinitions(PLACEMENT_ADAPTER));
+defineLocalizedBlocks(createVisualBlockDefinitions(PLACEMENT_ADAPTER));
 const palette = (primary, secondary, tertiary) => ({
   colourPrimary: primary,
   colourSecondary: secondary,
@@ -37,7 +34,6 @@ const theme = Blockly.Theme.defineTheme('arena', {
   fontStyle: { family: 'Manrope, Segoe UI, sans-serif', weight: '500', size: 14 },
   startHats: true,
 });
-export const toolbox = createVisualToolbox(PLACEMENT_ADAPTER);
 // One spacing scale for the workspace, palette, and reference view.
 const rendererOverrides = {
   NOTCH_WIDTH: 24,

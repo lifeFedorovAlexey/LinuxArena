@@ -33,17 +33,25 @@ test('contract view displays independent outputs and suppresses old success for 
   assert.equal(host.dataset.status, 'passed');
   assert.equal(host.querySelector('[data-value=expected]').textContent, '20 МиБ');
   assert.equal(host.querySelector('[data-value=actual]').textContent, '20 МиБ');
-  assert.equal(host.querySelector('.cv-state').textContent, '4 условия пройдены');
-  assert.match(host.querySelector('.cv-goal').textContent, /Найди адрес для распаковки ядра/);
-  assert.match(host.querySelector('.cv-goal').textContent, /Без перемещения — всегда нижняя граница/);
+  assert.equal(host.querySelector('.cv-state').textContent, '12/12 проверок');
+  assert.equal(host.querySelector('.cv-goal'), null);
   assert.deepEqual(
-    [...host.querySelectorAll('.cv-case-mark')].map((mark) => mark.textContent),
-    ['✓', '✓', '✓', '✓'],
+    [...host.querySelectorAll('.cv-requirement .cv-requirement-mark')].map((mark) => mark.textContent),
+    ['✓', '✓', '✓'],
   );
   assert.equal(
-    host.querySelector('[data-case=fixed] .cv-case-title').textContent,
-    '✓Без перемещения брать нижнюю границу',
+    host.querySelector('[data-requirement=relocation] .cv-requirement-title').textContent,
+    'Если «Перемещение» выключено, адрес равен «Нижняя граница»',
   );
+  assert.ok([...host.querySelectorAll('.cv-case-mark')].every((mark) => mark.textContent === '·'));
+  assert.deepEqual(
+    [...host.querySelectorAll('.cv-requirement')].map(
+      (group) => group.querySelectorAll('[data-case]').length,
+    ),
+    [6, 3, 3],
+  );
+  assert.equal(host.querySelector('.cv-requirements .cv-suite'), null);
+  assert.equal(host.querySelector('.cv-suite .cv-requirement-mark'), null);
   view.setDraftState({ valid: false, error: 'Disconnected input' });
   assert.equal(host.dataset.status, 'stale');
   assert.equal(host.querySelector('[data-value=expected]').textContent, '20 МиБ');
@@ -61,13 +69,14 @@ test('a failed condition explains the observed path and can reveal its exact ins
   const model = parseAssembly(assembly);
   const inputs = CONTRACT_CASES[3].inputs;
   view.update({ program: { model }, inputs, evaluation: executeProgram(model, inputs) });
-  assert.equal(host.querySelector('.cv-state').textContent, '3 из 4 условий');
+  assert.equal(host.querySelector('.cv-state').textContent, '10/12 проверок');
   const failed = host.querySelector('[data-case=fixed]');
   assert.equal(failed.dataset.status, 'failed');
   assert.equal(failed.querySelector('.cv-case-mark').textContent, '×');
   assert.equal(failed.querySelector('[data-case-actual]').textContent, 'Должно: 16 МиБ; сейчас: 20 МиБ');
   assert.equal(failed.querySelector('[data-case-reason]').hidden, false);
   assert.match(failed.querySelector('[data-case-reason]').textContent, /даже при выключенном перемещении/);
+  failed.click();
   const show = host.querySelector('.cv-problem');
   assert.equal(show.hidden, false);
   show.click();
@@ -116,7 +125,7 @@ test('pending draft compilation is distinct from an incomplete scheme and cannot
   assert.equal(host.dataset.status, 'passed');
 });
 
-test('clicking a case supplies its real inputs and shows the returned result', async (t) => {
+test('selecting a test previews its real inputs without persisting or invalidating the suite', async (t) => {
   const submitted = [];
   const { host } = fixture(t, {
     onInputs: async (patch) => {
@@ -127,11 +136,15 @@ test('clicking a case supplies its real inputs and shows the returned result', a
   host.querySelector('[data-case=below-floor]').click();
   await Promise.resolve();
   await Promise.resolve();
-  assert.deepEqual(submitted, [{ ...CONTRACT_CASES[2].inputs }]);
+  assert.deepEqual(submitted, []);
   assert.equal(host.querySelector('[data-value=expected]').textContent, '16 МиБ');
   assert.equal(host.querySelector('[data-value=actual]').textContent, '16 МиБ');
   assert.equal(host.querySelector('[data-case=below-floor]').getAttribute('aria-pressed'), 'true');
   assert.equal(host.querySelector('[name=loadAddress]').value, '0x800000');
+  assert.equal(host.querySelector('[name=loadAddress]').readOnly, true);
+  host.querySelector('.cv-manual').click();
+  assert.equal(host.querySelector('[name=loadAddress]').readOnly, false);
+  assert.equal(host.querySelector('[name=loadAddress]').value, CONTRACT_CASES[1].inputs.loadAddress);
 });
 
 test('editing an input invokes the callback and rejected values never keep a success state', async (t) => {
@@ -157,4 +170,86 @@ test('editing an input invokes the callback and rejected values never keep a suc
   assert.equal(host.dataset.status, 'stale');
   assert.equal(input.getAttribute('aria-invalid'), 'true');
   assert.equal(host.querySelector('[data-value=actual]').textContent, '—');
+});
+
+test('a real check run displays each input, marks requirements and keeps the first mismatch selected', async (t) => {
+  const previewed = [];
+  const { host, view } = fixture(t, { onPreview: (inputs) => previewed.push(inputs) });
+  const broken = parseAssembly(REFERENCE_ASM.replace('andq', 'orq'));
+  const inputs = CONTRACT_CASES[1].inputs;
+  view.update({ program: { model: broken }, inputs, evaluation: executeProgram(broken, inputs) });
+  const pending = view.runChecks();
+  assert.equal(host.dataset.status, 'running');
+  assert.equal(host.querySelector('[name=loadAddress]').value, '0x1200000');
+  assert.equal(host.querySelector('[data-value=actual]').textContent, '—');
+  assert.equal(host.querySelector('[data-case=aligned]').dataset.status, 'running');
+  await pending;
+  view.finishChecks();
+  assert.equal(previewed.filter(Boolean).length, 13);
+  assert.equal(view.run.results.size, 12);
+  assert.equal(view.preview.id, 'aligned');
+  assert.equal(host.dataset.status, 'failed');
+  assert.equal(host.querySelector('[data-address=expected]').textContent, '0x1200000');
+  assert.notEqual(host.querySelector('[data-address=actual]').textContent, '0x1200000');
+  assert.match(host.querySelector('.cv-diagnostic').textContent, /Не совпал адрес/);
+  assert.equal(host.querySelector('[data-requirement=alignment] .cv-requirement-mark').textContent, '×');
+  assert.equal(view.state.inputs, inputs);
+});
+
+test('preview and check progress preserve unfinished manual input across locale-neutral state updates', async (t) => {
+  const { dom, host, view } = fixture(t);
+  const field = host.querySelector('[name=loadAddress]');
+  field.focus();
+  field.value = '0x';
+  field.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+  const pending = view.runChecks();
+  assert.equal(field.readOnly, true);
+  view.update(state());
+  await pending;
+  view.finishChecks();
+  host.querySelector('.cv-manual').click();
+  assert.equal(field.value, '0x');
+  assert.equal(field.readOnly, false);
+  assert.equal(view.dirty.has('loadAddress'), true);
+  assert.equal(host.dataset.status, 'stale');
+});
+
+test('changing the program cancels an in-flight check and cannot restore obsolete successes', async (t) => {
+  const { host, view } = fixture(t);
+  const pending = view.runChecks();
+  view.setDraftState({ valid: false, pending: true });
+  assert.equal(await pending, false);
+  assert.equal(view.run, null);
+  assert.equal(host.dataset.status, 'stale');
+  assert.equal(host.querySelector('[data-value=actual]').textContent, '—');
+  assert.ok([...host.querySelectorAll('.cv-requirement-mark')].every((mark) => mark.textContent === '·'));
+});
+
+test('a full-suite failure stays visible even if every named requirement passes', (t) => {
+  const { host, view } = fixture(t);
+  const failedInputs = { ...CONTRACT_CASES[0].inputs, loadAddress: '0xffffffffffffffff' };
+  const failed = { inputs: failedInputs, expected: '0x1000000', actual: '0x0' };
+  const candidate = {
+    status: 'failed',
+    passed: 4198,
+    total: 4199,
+    failed: 1,
+    failures: [failed],
+    groups: [
+      { id: 'requirements', status: 'passed', passed: 12, total: 12, failures: [] },
+      { id: 'current', status: 'passed', passed: 1, total: 1, failures: [] },
+      { id: 'boundaries', status: 'failed', passed: 89, total: 90, failures: [failed] },
+      { id: 'random', status: 'passed', passed: 4096, total: 4096, failures: [] },
+    ],
+  };
+  view.update({ ...state(), checks: { candidate } });
+  assert.equal(host.dataset.status, 'failed');
+  assert.equal(host.querySelector('.cv-state').textContent, '4198/4199 проверок');
+  assert.equal(host.querySelector('[data-batch=boundaries] .cv-batch-count').textContent, '89/90');
+  host.querySelector('[data-case=suite-0]').click();
+  assert.equal(host.querySelector('[name=loadAddress]').value, '0xffffffffffffffff');
+  assert.equal(host.querySelector('[data-address=expected]').textContent, '0x1000000');
+  assert.equal(host.querySelector('[data-address=actual]').textContent, '0x0');
+  assert.match(host.querySelector('.cv-diagnostic').textContent, /ожидалось 0x1000000, получено 0x0/);
+  assert.equal(view.state.checks.candidate, candidate);
 });

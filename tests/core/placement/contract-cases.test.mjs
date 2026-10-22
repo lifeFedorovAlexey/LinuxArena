@@ -13,13 +13,33 @@ const makeState = (assembly = REFERENCE_ASM, inputs = CONTRACT_CASES[1].inputs) 
   return { program: { model }, inputs, evaluation: executeProgram(model, inputs) };
 };
 
-test('four user-visible contract cases cover alignment, rounding, minimum and fixed placement', () => {
+test('twelve named checks cover three requirements with different inputs', () => {
   const result = evaluateContractCases(makeState());
   assert.equal(result.status, 'passed');
-  assert.equal(result.passedCount, 4);
+  assert.equal(result.passedCount, 12);
+  assert.equal(new Set(CONTRACT_CASES.map((item) => item.id)).size, 12);
+  assert.deepEqual(
+    ['alignment', 'minimum', 'relocation'].map(
+      (id) => CONTRACT_CASES.filter((item) => item.requirement === id).length,
+    ),
+    [6, 3, 3],
+  );
   assert.deepEqual(
     result.cases.map((item) => item.expected),
-    ['0x1200000', '0x1400000', '0x1000000', '0x1000000'],
+    [
+      '0x1200000',
+      '0x1400000',
+      '0x1000000',
+      '0x1000000',
+      '0x1800000',
+      '0x1000000',
+      '0x1400000',
+      '0x1400000',
+      '0x1000000',
+      '0x1800000',
+      '0x1000000',
+      '0x1800000',
+    ],
   );
   assert.ok(result.cases.every((item) => item.passed));
   assert.equal(result.current.expected, '0x1400000');
@@ -33,9 +53,22 @@ test('expected outputs stay anchored to Linux when the candidate changes', () =>
   assert.notEqual(result.current.actual, result.current.expected);
   assert.deepEqual(
     result.cases.map((item) => item.expected),
-    ['0x1200000', '0x1400000', '0x1000000', '0x1000000'],
+    [
+      '0x1200000',
+      '0x1400000',
+      '0x1000000',
+      '0x1000000',
+      '0x1800000',
+      '0x1000000',
+      '0x1400000',
+      '0x1400000',
+      '0x1000000',
+      '0x1800000',
+      '0x1000000',
+      '0x1800000',
+    ],
   );
-  assert.ok(result.passedCount < 4);
+  assert.ok(result.passedCount < 12);
 });
 
 test('an incomplete draft never retains successful outputs or case indicators', () => {
@@ -97,7 +130,7 @@ test('disabled relocation reports the proven unguarded calculation and skipped m
   const state = makeState(outsideGuard, CONTRACT_CASES[3].inputs);
   const snapshot = JSON.stringify(state);
   const result = evaluateContractCases(state);
-  assert.equal(result.passedCount, 3);
+  assert.equal(result.passedCount, 10);
   const failed = result.cases[3];
   assert.equal(failed.expected, '0x1000000');
   assert.equal(failed.actual, '0x1400000');

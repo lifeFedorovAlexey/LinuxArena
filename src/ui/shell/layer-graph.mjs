@@ -1,3 +1,4 @@
+import { t } from '../shared/i18n/index.mjs';
 import { BOOT_LAYERS } from '../../core/placement/index.mjs';
 const nodeIcons = {
   loader: 'arrow',
@@ -33,10 +34,13 @@ export function graphFor(id) {
   return {
     nodes: spec.nodes.map((node, index) => ({
       ...node,
+      title: t(node.title),
+      ariaLabel: node.target ? t('{title} — открыть слой', { title: t(node.title) }) : t(node.title),
+      tooltip: t(node.target ? 'Открыть блок' : 'Граница текущего разбора'),
       x: positions[index][0],
       z: positions[index][1],
       available: !!node.target,
-      subtitle: node.symbol ?? (node.kind === 'external' ? 'внешняя граница' : 'следующий этап'),
+      subtitle: node.symbol ?? (node.kind === 'external' ? t('внешняя граница') : t('следующий этап')),
       icon: nodeIcons[node.id],
     })),
     edges: spec.edges,

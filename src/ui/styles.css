@@ -1,6 +1,7 @@
 /* Base → component views → viewport rules → editing layout → contract sidebar. */
 @import './shared/base.css';
 @import './shared/controls.css';
+@import './shared/language-switcher/view.css';
 @import './shell/styles/layout.css';
 @import './scene/stage.css';
 @import './scene/nodes.css';

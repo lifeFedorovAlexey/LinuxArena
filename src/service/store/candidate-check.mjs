@@ -1,10 +1,16 @@
 import { createHash } from 'node:crypto';
-import { parseAssembly, executeProgram, referenceResult } from '../../core/placement/index.mjs';
+import {
+  parseAssembly,
+  executeProgram,
+  referenceResult,
+  CONTRACT_CASES,
+} from '../../core/placement/index.mjs';
 import { DEFAULT_INPUTS } from './defaults.mjs';
 const hash = (text) => createHash('sha256').update(text).digest('hex');
 export function checkCandidate(assembly, currentInputs = DEFAULT_INPUTS) {
   const model = parseAssembly(assembly);
-  const samples = [{ ...currentInputs }];
+  const boundaries = [];
+  const randomInputs = [];
   const addresses = [
     0n,
     1n,
@@ -20,7 +26,7 @@ export function checkCandidate(assembly, currentInputs = DEFAULT_INPUTS) {
   for (const load of addresses) {
     for (const alignment of alignments) {
       for (const relocatable of [true, false]) {
-        samples.push({
+        boundaries.push({
           loadAddress: `0x${load.toString(16)}`,
           alignment: `0x${alignment.toString(16)}`,
           minimumAddress: '0x1000000',
@@ -38,13 +44,39 @@ export function checkCandidate(assembly, currentInputs = DEFAULT_INPUTS) {
   };
   for (let i = 0; i < 4096; i++) {
     const load = (BigInt(random() & 0xfffff) << 32n) | BigInt(random());
-    samples.push({
+    randomInputs.push({
       loadAddress: `0x${load.toString(16)}`,
       alignment: `0x${(1n << BigInt(21 + (random() % 11))).toString(16)}`,
       minimumAddress: '0x1000000',
       relocatable: i % 5 !== 0,
     });
   }
+  const groups = [
+    checkGroup(
+      model,
+      'requirements',
+      CONTRACT_CASES.map((item) => ({ ...item.inputs })),
+    ),
+    checkGroup(model, 'current', [{ ...currentInputs }]),
+    checkGroup(model, 'boundaries', boundaries),
+    checkGroup(model, 'random', randomInputs),
+  ];
+  const total = groups.reduce((sum, group) => sum + group.total, 0);
+  const passed = groups.reduce((sum, group) => sum + group.passed, 0);
+  return {
+    status: passed === total ? 'passed' : 'failed',
+    scope: 'candidate-interpreter-vs-linux-semantics',
+    total,
+    passed,
+    failed: total - passed,
+    failures: groups.flatMap((group) => group.failures).slice(0, 3),
+    groups,
+    programHash: hash(assembly),
+    bootVerified: false,
+  };
+}
+
+function checkGroup(model, id, samples) {
   let passed = 0;
   const failures = [];
   for (const inputs of samples) {
@@ -59,12 +91,10 @@ export function checkCandidate(assembly, currentInputs = DEFAULT_INPUTS) {
   }
   return {
     status: passed === samples.length ? 'passed' : 'failed',
-    scope: 'candidate-interpreter-vs-linux-semantics',
+    id,
     total: samples.length,
     passed,
     failed: samples.length - passed,
     failures,
-    programHash: hash(assembly),
-    bootVerified: false,
   };
 }

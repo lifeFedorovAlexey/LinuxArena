@@ -7,8 +7,9 @@
     <meta
       name="description"
       content="LinuxArena — исследование и улучшение ядра Linux вместе со своим ИИ-агентом."
+      data-i18n-content="LinuxArena — исследование и улучшение ядра Linux вместе со своим ИИ-агентом."
     />
-    <title>LinuxArena — ядро в разрезе</title>
+    <title data-i18n="LinuxArena — ядро в разрезе">LinuxArena — ядро в разрезе</title>
     <link
       rel="icon"
       type="image/svg+xml"
@@ -28,17 +29,23 @@
   <body>
     <div class="app-shell">
       <header class="app-header">
-        <button class="brand" id="home" aria-label="LinuxArena — к ядру">
+        <button
+          class="brand"
+          id="home"
+          aria-label="LinuxArena — к ядру"
+          data-i18n-aria-label="LinuxArena — к ядру"
+        >
           <svg viewBox="0 0 32 32" aria-hidden="true">
-            <path d="m16 2 14 8-14 8L2 10z" />
-            <path d="m2 16 14 8 14-8M2 22l14 8 14-8" /></svg
+            <path d="m16 2 14 8-14 8L2 10z"></path>
+            <path d="m2 16 14 8 14-8M2 22l14 8 14-8"></path></svg
           ><span>linux<span class="brand-light">arena</span></span>
         </button>
         <div class="release">6.18.58 <span>LTS</span></div>
         <div class="header-spacer"></div>
-        <span id="connection" class="connection"><i></i> Локально</span>
+        <div id="language-switcher"></div>
+        <span id="connection" class="connection"><i></i> <span data-i18n="Локально">Локально</span> </span>
         <button class="agent-button" id="agent-button">
-          <span class="button-icon" data-icon="plug"></span><span>Свой агент</span
+          <span class="button-icon" data-icon="plug"></span><span data-i18n="Свой агент">Свой агент</span
           ><span class="mini-tag">MCP</span>
         </button>
       </header>
@@ -46,12 +53,14 @@
       <main>
         <div class="workspace-heading">
           <div>
-            <nav id="breadcrumbs" class="breadcrumbs" aria-label="Слои"></nav>
+            <nav id="breadcrumbs" class="breadcrumbs" aria-label="Слои" data-i18n-aria-label="Слои"></nav>
             <div class="title-row">
-              <h1 id="layer-title">Ядро Linux</h1>
+              <h1 id="layer-title" data-i18n="Ядро Linux">Ядро Linux</h1>
               <span class="layer-index" id="layer-index">01 / 03</span>
             </div>
-            <div class="scope-label" id="scope-label">x86-64 · карта подсистем</div>
+            <div class="scope-label" id="scope-label" data-i18n="x86-64 · карта подсистем">
+              x86-64 · карта подсистем
+            </div>
           </div>
           <div class="heading-actions">
             <button
@@ -60,6 +69,8 @@
               title="Контракт блока"
               aria-label="Контракт блока"
               data-icon="contract"
+              data-i18n-aria-label="Контракт блока"
+              data-i18n-title="Контракт блока"
             ></button>
             <button
               class="icon-button"
@@ -67,37 +78,85 @@
               title="Код блока"
               aria-label="Код блока"
               data-icon="code"
+              data-i18n-aria-label="Код блока"
+              data-i18n-title="Код блока"
             ></button>
             <button class="primary-button" id="run-button">
-              <span data-icon="play"></span><span id="run-label">Исследовать</span>
+              <span data-icon="play"></span><span id="run-label" data-i18n="Исследовать">Исследовать</span>
             </button>
           </div>
         </div>
 
         <div id="arena-workbench" class="arena-workbench">
-          <section id="live-contract" hidden aria-label="Исполнение контракта"></section>
-          <section class="workspace" id="workspace" aria-label="Визуальная архитектура ядра">
+          <section
+            id="live-contract"
+            hidden=""
+            aria-label="Исполнение контракта"
+            data-i18n-aria-label="Исполнение контракта"
+          ></section>
+          <section
+            class="workspace"
+            id="workspace"
+            aria-label="Визуальная архитектура ядра"
+            data-i18n-aria-label="Визуальная архитектура ядра"
+          >
             <div class="scene-area" id="scene-area">
               <div id="scene-host" class="scene-host"></div>
-              <div id="node-labels" class="node-labels" aria-label="Блоки текущего слоя"></div>
-              <div id="flow-host" class="flow-host" hidden></div>
+              <div
+                id="node-labels"
+                class="node-labels"
+                aria-label="Блоки текущего слоя"
+                data-i18n-aria-label="Блоки текущего слоя"
+              ></div>
+              <div id="flow-host" class="flow-host" hidden=""></div>
               <div class="stage-topline">
-                <span class="eyebrow" id="map-kind">АРХИТЕКТУРА</span
-                ><span class="tiny-pill"><i></i><span id="map-status">1 маршрут открыт</span></span>
+                <span class="eyebrow" id="map-kind" data-i18n="АРХИТЕКТУРА">АРХИТЕКТУРА</span
+                ><span class="tiny-pill"
+                  ><i></i><span id="map-status" data-i18n="1 маршрут открыт">1 маршрут открыт</span></span
+                >
               </div>
-              <div id="edit-tools" class="edit-tools" hidden>
-                <div class="algorithm-tabs" role="group" aria-label="Сравнение алгоритмов">
-                  <button id="candidate-view" aria-pressed="true">Моё решение</button
-                  ><button id="reference-view" aria-pressed="false">Как в Linux</button>
+              <div id="edit-tools" class="edit-tools" hidden="">
+                <div
+                  class="algorithm-tabs"
+                  role="group"
+                  aria-label="Сравнение алгоритмов"
+                  data-i18n-aria-label="Сравнение алгоритмов"
+                >
+                  <button id="candidate-view" aria-pressed="true" data-i18n="Моё решение">Моё решение</button
+                  ><button id="reference-view" aria-pressed="false" data-i18n="Как в Linux">
+                    Как в Linux
+                  </button>
                 </div>
-                <button id="undo-blocks" title="Отменить" aria-label="Отменить правку">↶</button
-                ><button id="redo-blocks" title="Повторить" aria-label="Повторить правку">↷</button
-                ><button id="delete-block" title="Удалить выбранный блок" aria-label="Удалить выбранный блок">
+                <button
+                  id="undo-blocks"
+                  title="Отменить"
+                  aria-label="Отменить правку"
+                  data-i18n-aria-label="Отменить правку"
+                  data-i18n-title="Отменить"
+                >
+                  ↶</button
+                ><button
+                  id="redo-blocks"
+                  title="Повторить"
+                  aria-label="Повторить правку"
+                  data-i18n-aria-label="Повторить правку"
+                  data-i18n-title="Повторить"
+                >
+                  ↷</button
+                ><button
+                  id="delete-block"
+                  title="Удалить выбранный блок"
+                  aria-label="Удалить выбранный блок"
+                  data-i18n-aria-label="Удалить выбранный блок"
+                  data-i18n-title="Удалить выбранный блок"
+                >
                   ⌫
                 </button>
-                <button id="trace-button" class="trace-button">▷ Путь</button
+                <button id="trace-button" class="trace-button" data-i18n="▷ Выполнить">▷ Выполнить</button
                 ><span id="draft-status" role="status"></span
-                ><button id="reload-blocks" hidden>Загрузить сохранённое</button>
+                ><button id="reload-blocks" hidden="" data-i18n="Загрузить сохранённое">
+                  Загрузить сохранённое
+                </button>
               </div>
               <div class="scene-toolbar">
                 <div class="view-controls">
@@ -107,6 +166,8 @@
                     data-icon="minus"
                     title="Отдалить"
                     aria-label="Отдалить"
+                    data-i18n-aria-label="Отдалить"
+                    data-i18n-title="Отдалить"
                   ></button
                   ><button
                     class="icon-button"
@@ -114,6 +175,8 @@
                     data-icon="fit"
                     title="Вписать схему"
                     aria-label="Вписать схему"
+                    data-i18n-aria-label="Вписать схему"
+                    data-i18n-title="Вписать схему"
                   ></button
                   ><button
                     class="icon-button"
@@ -121,41 +184,51 @@
                     data-icon="plus"
                     title="Приблизить"
                     aria-label="Приблизить"
+                    data-i18n-aria-label="Приблизить"
+                    data-i18n-title="Приблизить"
                   ></button>
                 </div>
-                <div class="scene-hint" id="scene-hint"><span class="hint-key">↵</span> Войти в блок</div>
+                <div class="scene-hint" id="scene-hint">
+                  <span class="hint-key">↵</span> <span data-i18n="Войти в блок">Войти в блок</span>
+                </div>
                 <button class="text-button back-button" id="back-button">
-                  <span data-icon="back"></span> Выше
+                  <span data-icon="back"></span> <span data-i18n="Выше">Выше</span>
                 </button>
               </div>
-              <div id="trace-banner" class="trace-banner" hidden>
+              <div id="trace-banner" class="trace-banner" hidden="">
                 <span class="trace-dot"></span><span id="trace-label"></span><code id="trace-value"></code>
               </div>
-              <div id="scene-fallback" class="scene-fallback" hidden>
+              <div
+                id="scene-fallback"
+                class="scene-fallback"
+                hidden=""
+                data-i18n="3D недоступно. Навигация по блокам сохранена."
+              >
                 3D недоступно. Навигация по блокам сохранена.
               </div>
             </div>
 
-            <aside class="inspector" id="inspector" hidden>
+            <aside class="inspector" id="inspector" hidden="">
               <div class="inspector-header">
                 <div class="inspector-tabs">
-                  <button id="contract-tab" class="active">Контракт</button
-                  ><button id="source-tab">Код</button>
+                  <button id="contract-tab" class="active" data-i18n="Контракт">Контракт</button
+                  ><button id="source-tab" data-i18n="Код">Код</button>
                 </div>
                 <button
                   class="icon-button small"
                   id="close-inspector"
                   data-icon="close"
                   aria-label="Закрыть панель"
+                  data-i18n-aria-label="Закрыть панель"
                 ></button>
               </div>
               <div id="contract-view">
                 <div class="panel-caption">
-                  <span class="eyebrow">ВХОД</span><span class="mono">boot_params</span>
+                  <span class="eyebrow" data-i18n="ВХОД">ВХОД</span><span class="mono">boot_params</span>
                 </div>
                 <form id="inputs-form">
                   <label class="input-field"
-                    ><span>Адрес образа <code>load</code></span
+                    ><span> <span data-i18n="Адрес образа">Адрес образа</span> <code>load</code></span
                     ><input
                       name="loadAddress"
                       id="load-address"
@@ -163,17 +236,23 @@
                       spellcheck="false"
                       autocomplete="off"
                       aria-label="Адрес образа"
+                      data-i18n-aria-label="Адрес образа"
                   /></label>
                   <label class="input-field"
-                    ><span>Выравнивание <code>align</code></span
-                    ><select name="alignment" id="alignment" aria-label="Выравнивание">
+                    ><span> <span data-i18n="Выравнивание">Выравнивание</span> <code>align</code></span
+                    ><select
+                      name="alignment"
+                      id="alignment"
+                      aria-label="Выравнивание"
+                      data-i18n-aria-label="Выравнивание"
+                    >
                       <option value="0x200000">2 MiB</option>
                       <option value="0x1000000">16 MiB</option>
                       <option value="0x2000000">32 MiB</option>
                     </select></label
                   >
                   <label class="input-field"
-                    ><span>Нижняя граница <code>min</code></span
+                    ><span> <span data-i18n="Нижняя граница">Нижняя граница</span> <code>min</code></span
                     ><input
                       name="minimumAddress"
                       id="minimum-address"
@@ -181,28 +260,33 @@
                       spellcheck="false"
                       autocomplete="off"
                       aria-label="Нижняя граница"
+                      data-i18n-aria-label="Нижняя граница"
                   /></label>
                   <label class="toggle-field"
-                    ><span>Перемещение ядра</span><input type="checkbox" id="relocatable" checked /><span
+                    ><span data-i18n="Перемещение ядра">Перемещение ядра</span
+                    ><input type="checkbox" id="relocatable" checked="" /><span
                       class="toggle-track"
                       aria-hidden="true"
                     ></span
                   ></label>
                   <button class="secondary-button apply-inputs" type="submit">
-                    Применить входы <span>↵</span>
+                    <span data-i18n="Применить входы">Применить входы</span> <span>↵</span>
                   </button>
                 </form>
                 <div class="output-field">
-                  <div class="eyebrow">ВЫХОД <code>%rbp</code></div>
+                  <div class="eyebrow"><span data-i18n="ВЫХОД">ВЫХОД</span> <code>%rbp</code></div>
                   <div id="output-value" class="output-value">—</div>
-                  <div id="output-description" class="muted">Адрес распаковки</div>
+                  <div id="output-description" class="muted" data-i18n="Адрес распаковки">
+                    Адрес распаковки
+                  </div>
                 </div>
                 <div class="contract-facts">
-                  <span>u64 · без выделения памяти</span
-                  ><span id="contract-effects">Изменяет RAX, RBP и флаги</span
-                  ><span id="contract-extra-effects" hidden></span>
+                  <span data-i18n="u64 · без выделения памяти">u64 · без выделения памяти</span
+                  ><span id="contract-effects" data-i18n="Изменяет RAX, RBP и флаги"
+                    >Изменяет RAX, RBP и флаги</span
+                  ><span id="contract-extra-effects" hidden=""></span>
                 </div>
-                <div id="contract-warning" class="contract-warning" hidden></div>
+                <div id="contract-warning" class="contract-warning" hidden=""></div>
                 <div class="source-anchor">
                   <span data-icon="source"></span
                   ><a
@@ -213,29 +297,44 @@
                   >
                 </div>
               </div>
-              <div id="source-view" hidden>
+              <div id="source-view" hidden="">
                 <div class="editor-top">
-                  <span class="eyebrow">ASM · КАНДИДАТ</span
-                  ><button class="text-button" id="reset-program">Сбросить</button>
+                  <span class="eyebrow" data-i18n="ASM · КАНДИДАТ">ASM · КАНДИДАТ</span
+                  ><button class="text-button" id="reset-program" data-i18n="Сбросить">Сбросить</button>
                 </div>
-                <textarea id="source-editor" spellcheck="false" aria-label="Ассемблер блока"></textarea>
+                <textarea
+                  id="source-editor"
+                  spellcheck="false"
+                  aria-label="Ассемблер блока"
+                  data-i18n-aria-label="Ассемблер блока"
+                ></textarea>
                 <div class="editor-actions">
-                  <span id="edit-status" class="muted">Синхронизировано</span
-                  ><button class="primary-button small-primary" id="save-program">Применить</button>
+                  <span id="edit-status" class="muted" data-i18n="Синхронизировано">Синхронизировано</span
+                  ><button class="primary-button small-primary" id="save-program" data-i18n="Применить">
+                    Применить
+                  </button>
                 </div>
-                <p class="editor-note">
+                <p
+                  class="editor-note"
+                  data-i18n="Код генерируется из соединённых блоков. Изменения кода возвращаются в редактор."
+                >
                   Код генерируется из соединённых блоков. Изменения кода возвращаются в редактор.
                 </p>
               </div>
             </aside>
           </section>
         </div>
-        <section class="metrics" id="metrics" aria-label="Показатели процессов"></section>
+        <section
+          class="metrics"
+          id="metrics"
+          aria-label="Показатели процессов"
+          data-i18n-aria-label="Показатели процессов"
+        ></section>
 
         <footer class="contributors">
           <div class="contributors-left">
-            <span class="eyebrow">КОНТРИБЬЮТОРЫ</span>
-            <div class="avatar-stack" aria-label="Авторы исходника">
+            <span class="eyebrow" data-i18n="КОНТРИБЬЮТОРЫ">КОНТРИБЬЮТОРЫ</span>
+            <div class="avatar-stack" aria-label="Авторы исходника" data-i18n-aria-label="Авторы исходника">
               <span title="Linus Torvalds">LT</span><span title="Hans Lermen">HL</span
               ><span title="Werner Almesberger">WA</span>
             </div>
@@ -247,7 +346,8 @@
             >
           </div>
           <div class="contribution-status">
-            <span class="hollow-dot"></span><span>Рекорды ещё не присвоены</span
+            <span class="hollow-dot"></span
+            ><span data-i18n="Рекорды ещё не присвоены">Рекорды ещё не присвоены</span
             ><span class="footer-version">PROTOTYPE 01</span>
           </div>
         </footer>
@@ -258,11 +358,19 @@
       <div class="dialog-header">
         <div>
           <span class="eyebrow">MCP · STDIO</span>
-          <h2>Твой агент. Твоя попытка.</h2>
+          <h2 data-i18n="Твой агент. Твоя попытка.">Твой агент. Твоя попытка.</h2>
         </div>
-        <button class="icon-button" id="close-dialog" data-icon="close" aria-label="Закрыть"></button>
+        <button
+          class="icon-button"
+          id="close-dialog"
+          data-icon="close"
+          aria-label="Закрыть"
+          data-i18n-aria-label="Закрыть"
+        ></button>
       </div>
-      <p>Запусти MCP из папки проекта. Изменения агента сразу появятся на арене.</p>
+      <p data-i18n="Запусти MCP из папки проекта. Изменения агента сразу появятся на арене.">
+        Запусти MCP из папки проекта. Изменения агента сразу появятся на арене.
+      </p>
       <div class="command-box">
         <code>node src/service/mcp/server.mjs</code
         ><button
@@ -270,14 +378,19 @@
           id="copy-command"
           data-icon="copy"
           aria-label="Скопировать команду"
+          data-i18n-aria-label="Скопировать команду"
         ></button>
       </div>
-      <div class="tool-chips"><span>Считать блок</span><span>Изменить код</span><span>Проверить</span></div>
+      <div class="tool-chips">
+        <span data-i18n="Считать блок">Считать блок</span><span data-i18n="Изменить код">Изменить код</span
+        ><span data-i18n="Проверить">Проверить</span>
+      </div>
       <div class="dialog-foot">
-        <span class="status-dot"></span> Локальный сервер · <span id="server-address">127.0.0.1:4173</span>
+        <span class="status-dot"></span> <span data-i18n="Локальный сервер ·">Локальный сервер ·</span>
+        <span id="server-address">127.0.0.1:4173</span>
       </div>
     </dialog>
-    <div id="toast" class="toast" role="status" hidden></div>
+    <div id="toast" class="toast" role="status" hidden=""></div>
     <script src="/vendor/blockly/blockly_compressed.js"></script>
     <script src="/vendor/blockly/msg/ru.js"></script>
     <script type="module" src="/src/ui/shell/app.mjs"></script>

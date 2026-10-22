@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createArenaServer } from '../../src/service/http/server.mjs';
-import { REFERENCE_ASM } from '../../src/core/placement/index.mjs';
+import { REFERENCE_ASM, CONTRACT_CASES } from '../../src/core/placement/index.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const nativeFixture = async (command) =>
@@ -93,7 +93,16 @@ test('candidate verification catches semantic regressions; native timings keep a
   const f = await fixture(t);
   const correct = await f.request('/api/check', {});
   assert.equal(correct.data.checks.status, 'passed');
-  assert.ok(correct.data.checks.candidate.total >= 4096);
+  assert.equal(correct.data.checks.candidate.total, 4187 + CONTRACT_CASES.length);
+  assert.deepEqual(
+    correct.data.checks.candidate.groups.map(({ id, total, passed }) => ({ id, total, passed })),
+    [
+      { id: 'requirements', total: 12, passed: 12 },
+      { id: 'current', total: 1, passed: 1 },
+      { id: 'boundaries', total: 90, passed: 90 },
+      { id: 'random', total: 4096, passed: 4096 },
+    ],
+  );
   assert.equal(correct.data.checks.candidate.failed, 0);
   await f.request('/api/program', { assembly: REFERENCE_ASM.replace('jae', 'jb') });
   const wrong = await f.request('/api/check', {});

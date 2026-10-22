@@ -1,3 +1,4 @@
+import { t } from '../shared/i18n/index.mjs';
 import { BOOT_LAYERS } from '../../core/placement/index.mjs';
 import { $ } from '../shared/dom.mjs';
 import { api } from './api.mjs';
@@ -56,7 +57,7 @@ export function bindControls(
   });
   $('#source-editor').addEventListener('input', () => {
     model.sourceDirty = true;
-    $('#edit-status').textContent = 'Есть изменения';
+    $('#edit-status').textContent = t('Есть изменения');
   });
   $('#save-program').addEventListener('click', async () => {
     try {
@@ -98,9 +99,9 @@ export function bindControls(
   $('#copy-command').addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText('node src/service/mcp/server.mjs');
-      toast('Команда скопирована');
+      toast(t('Команда скопирована'));
     } catch {
-      toast('Скопируйте команду из поля', true);
+      toast(t('Скопируйте команду из поля'), true);
     }
   });
   document.addEventListener('keydown', (event) => {

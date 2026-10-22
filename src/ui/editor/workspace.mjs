@@ -1,4 +1,5 @@
-import { Blockly, toolbox, workspaceAppearance } from './appearance.mjs';
+import { Blockly, workspaceAppearance } from './appearance.mjs';
+import { localizedToolbox } from './localization.mjs';
 import { getReferenceModel } from '../../core/placement/index.mjs';
 import { modelToWorkspace, compileWorkspace } from '../../core/placement/visual.mjs';
 
@@ -12,7 +13,7 @@ export function createEditorWorkspace(host, onChange, onResize) {
   host.append(referenceSurface);
   const workspace = Blockly.inject(editSurface, {
     ...workspaceAppearance,
-    toolbox,
+    toolbox: localizedToolbox(),
     trashcan: true,
     comments: false,
     collapse: true,

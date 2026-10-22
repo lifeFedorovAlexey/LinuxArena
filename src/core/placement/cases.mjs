@@ -1,25 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 import { parseAssembly, serializeAssembly, executeProgram } from './model.mjs';
 import { validateInputs, referenceResult } from './inputs.mjs';
-
-const inputs = (loadAddress, relocatable = true) =>
-  Object.freeze({
-    loadAddress,
-    alignment: '0x200000',
-    minimumAddress: '0x1000000',
-    relocatable,
-  });
-
-export const CONTRACT_CASES = Object.freeze([
-  Object.freeze({ id: 'aligned', title: 'Подходящий адрес не менять', inputs: inputs('0x1200000') }),
-  Object.freeze({ id: 'round-up', title: 'Округлять вверх до ближайшего шага', inputs: inputs('0x1380000') }),
-  Object.freeze({ id: 'below-floor', title: 'Не опускаться ниже границы', inputs: inputs('0x800000') }),
-  Object.freeze({
-    id: 'fixed',
-    title: 'Без перемещения брать нижнюю границу',
-    inputs: inputs('0x1380000', false),
-  }),
-]);
+import { CONTRACT_CASES } from './requirements.mjs';
+export { CONTRACT_CASES } from './requirements.mjs';
 
 const same = (left, right) => {
   try {
@@ -101,8 +84,33 @@ function diagnoseFailure(model, caseInputs, evaluation, expected) {
   };
 }
 
+/** One shared evaluator for the live view, visible test run and service checks. */
+export function evaluateContractCase(model, item, { draftValid = true } = {}) {
+  const result = {
+    ...item,
+    expected: referenceResult(item.inputs),
+    actual: null,
+    passed: null,
+    error: null,
+    diagnostic: null,
+  };
+  if (draftValid && model) {
+    try {
+      const evaluation = executeProgram(model, item.inputs);
+      result.actual = evaluation.output;
+      result.passed = same(result.actual, result.expected);
+      if (!result.passed)
+        result.diagnostic = diagnoseFailure(model, item.inputs, evaluation, result.expected);
+    } catch (error) {
+      result.error = error.message;
+      result.passed = false;
+    }
+  }
+  return result;
+}
+
 /** Expected values always come from the immutable Linux reference semantics. */
-export function evaluateContractCases(state, { draftValid = true } = {}) {
+export function evaluateContractCases(state, { draftValid = true, checkCases = true } = {}) {
   const current = { expected: null, actual: null, passed: null, error: null, warnings: [] };
   if (state?.inputs) {
     try {
@@ -117,29 +125,9 @@ export function evaluateContractCases(state, { draftValid = true } = {}) {
         current.passed = same(current.actual, current.expected);
     }
   }
-  const cases = CONTRACT_CASES.map((item) => {
-    const result = {
-      ...item,
-      expected: referenceResult(item.inputs),
-      actual: null,
-      passed: null,
-      error: null,
-      diagnostic: null,
-    };
-    if (draftValid && state?.program?.model) {
-      try {
-        const evaluation = executeProgram(state.program.model, item.inputs);
-        result.actual = evaluation.output;
-        result.passed = same(result.actual, result.expected);
-        if (!result.passed)
-          result.diagnostic = diagnoseFailure(state.program.model, item.inputs, evaluation, result.expected);
-      } catch (error) {
-        result.error = error.message;
-        result.passed = false;
-      }
-    }
-    return result;
-  });
+  const cases = CONTRACT_CASES.map((item) =>
+    evaluateContractCase(state?.program?.model, item, { draftValid: draftValid && checkCases }),
+  );
   const passedCount = cases.filter((item) => item.passed === true).length;
   const total = cases.length;
   let status = 'empty';
